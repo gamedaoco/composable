@@ -45,14 +45,21 @@ jobs:
           rustup update stable
           rustup target add wasm32-unknown-unknown --toolchain nightly
 
-      - name: Build and Push Artifacts to gcloud
+      - name: Build and Release Composable Binary
         run: |
           /home/runner/.cargo/bin/cargo build --release -p composable
-          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
-          /home/runner/.cargo/bin/cargo build --release -p rotate-key
           gsutil cp target/release/composable gs://composable-binaries/releases/client/v0.1.0/ 
+
+      - name: Build and Release Parachain Utils Binary
+        run: |
+\          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
           gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
-          gsutil cp target/release/rotate-key gs://composable-binaries/releases/client/v0.1.0/  
+        
+      - name: Build and Release Rotate-Keys Utils Binary
+        run: |
+          /home/runner/.cargo/bin/cargo build --release -p composable
+          /home/runner/.cargo/bin/cargo build --release -p rotate-key
+          gsutil cp target/release/rotate-key gs://composable-binaries/releases/client/v0.1.0/ 
 
 
       # - name: Set up Docker Build
