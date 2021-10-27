@@ -57,7 +57,6 @@ jobs:
         
       - name: Build and Release Rotate-Keys Utils Binary
         run: |
-          /home/runner/.cargo/bin/cargo build --release -p composable
           /home/runner/.cargo/bin/cargo build --release -p rotate-key
           gsutil cp target/release/rotate-key gs://composable-binaries/releases/client/v0.1.0/ 
 
