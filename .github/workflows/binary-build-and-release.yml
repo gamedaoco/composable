@@ -37,6 +37,7 @@ jobs:
           BUILD_PROFILE=parachain-utils make build
 
   package-build:
+    depends-on: [binary-build]
     runs-on:
       - self-hosted
       - linux
@@ -49,6 +50,7 @@ jobs:
           tar -zcvf composable-{{ env.RELEASE_VERSION }}.tar.gz target/ 
 
   upload-artifacts:
+    depends-on: [package-build]
     runs-on: 
       - self-hosted
       - linux
