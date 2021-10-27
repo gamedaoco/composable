@@ -68,8 +68,7 @@ jobs:
             cd composable
             git pull origin main 
             wget wget https://storage.googleapis.com/composable-binaries/releases/client/v0.1.0/target.zip
-            unzip target.zip
-            ./target/release/parachain-utils upgrade-runtime target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm 
+           
 
   
 
