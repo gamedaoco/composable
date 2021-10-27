@@ -53,7 +53,9 @@ jobs:
       - name: Build and Release Parachain Utils Binary
         run: |
           /home/runner/.cargo/bin/cargo build --release -p parachain-utils
+          zip -r target.zip target/
           gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
+          gsutil cp target.zip gs://composable-binaries/releases/client/v0.1.0/
 
       - name: Run runtime upgrade on RPC Node
         uses: appleboy/ssh-action@master
@@ -65,6 +67,8 @@ jobs:
           script: |
             cd composable
             git pull origin main 
+            wget wget https://storage.googleapis.com/composable-binaries/releases/client/v0.1.0/target.zip
+            unzip target.zip
             ./target/release/parachain-utils upgrade-runtime target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm 
 
   
