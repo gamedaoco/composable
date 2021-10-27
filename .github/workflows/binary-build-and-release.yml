@@ -30,11 +30,11 @@ jobs:
 
       - name: Build Composable Binary
         run: |
-          PROFILE=composable make build
+          BUILD_PROFILE=composable make build
 
       - name: Build Parachain Utils Binary
         run: |
-          PROFILE=parachain-utils make build
+          BUILD_PROFILE=parachain-utils make build
 
   package-build:
     runs-on:
