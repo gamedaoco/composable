@@ -1,0 +1,63 @@
+name: Build Binary and Upload Artifacts
+on:
+  push:
+    branches:
+      - 'release/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  binary-build:
+    runs-on: 
+      - self-hosted
+      - linux
+      - x64
+      - sre
+    steps:
+      - uses: actions/checkout@v2
+        with: 
+          fetch-depth: 0
+
+      - name: Set env
+        run: echo "RELEASE_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
+
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
+
+      - name: Build Composable Binary
+        run: |
+          PROFILE=composable make build
+
+      - name: Build Parachain Utils Binary
+        run: |
+          PROFILE=parachain-utils make build
+
+    package-build:
+      runs-on:
+        - self-hosted
+        - linux
+        - x64
+        - sre
+      steps: 
+        - uses: actions/checkout@v2
+        - name: Package Build Release as Artifacts
+          run: |
+            tar -zcvf composable-{{ env.RELEASE_VERSION }}.tar.gz target/ 
+
+    upload-artifacts:
+      runs-on: 
+        - self-hosted
+        - linux
+        - x64
+        - sre
+      steps:
+        - name: Upload artifacts to Composable Artifact Registry
+          run: |
+            gsutil cp composable-{{ env.RELEASE_VERSION }}.tar.gz gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
+
+
+      

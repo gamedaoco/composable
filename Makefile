@@ -18,7 +18,7 @@ help:
 	@echo $(print_help_text)
 
 build:
-	@cargo build
+	@cargo build --release -p ${BUILD_PROFILE}
 
 clean:
 	@cargo clean
