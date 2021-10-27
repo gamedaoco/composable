@@ -55,6 +55,20 @@ jobs:
 \          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
           gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
 
+      - name: Run runtime upgrade on RPC Node
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd composable
+            git pull origin master 
+            ./target/release/parachain-utils upgrade-runtime target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm 
+
+  
+
 
       # - name: Set up Docker Build
       #   run: |
