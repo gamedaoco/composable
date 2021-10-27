@@ -64,7 +64,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd composable
-            git pull origin master 
+            git pull origin main 
             ./target/release/parachain-utils upgrade-runtime target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm 
 
   
