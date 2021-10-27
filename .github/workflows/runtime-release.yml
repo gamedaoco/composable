@@ -52,7 +52,7 @@ jobs:
 
       - name: Build and Release Parachain Utils Binary
         run: |
-\         /home/runner/.cargo/bin/cargo build --release -p parachain-utils
+          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
           gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
 
       - name: Run runtime upgrade on RPC Node
