@@ -43,12 +43,10 @@ jobs:
 
       - name: Package Build Release as Artifacts
         run: |
-          zip -r composable-{{ env.RELEASE_VERSION }}.zip target/release/composable
-          zip -r parachain-utils-{{ env.RELEASE_VERSION }}.zip target/release/parachain-utils
+          zip -r target.zip target/
 
       - name: Upload artifacts to Composable Artifact Registry
         run: |
-          gsutil cp composable-{{ env.RELEASE_VERSION }}.zip  gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
-          gsutil cp parachain-utils-{{ env.RELEASE_VERSION }}.zip  gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
+          gsutil cp target.zip  gs://composable-binaries/releases/client/v0.1.0/
 
 
