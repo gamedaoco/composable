@@ -39,13 +39,16 @@ jobs:
 
       - name: Build Parachain Utils Binary
         run: |
-          /home/runner/.cargo/bin/cargo build --release -p composable
+          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
 
       - name: Package Build Release as Artifacts
         run: |
-          tar -zcvf composable-{{ env.RELEASE_VERSION }}.tar.gz target/ 
+          zip -r composable-{{ env.RELEASE_VERSION }}.zip target/release/composable
+          zip -r parachain-utils-{{ env.RELEASE_VERSION }}.zip target/release/parachain-utils
 
       - name: Upload artifacts to Composable Artifact Registry
         run: |
-          gsutil cp composable-{{ env.RELEASE_VERSION }}.tar.gz gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
+          gsutil cp composable-{{ env.RELEASE_VERSION }}.zip  gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
+          gsutil cp parachain-utils-{{ env.RELEASE_VERSION }}.zip  gs://composable-binaries/releases/client/{{ env.RELEASE_VERSION }}/
+
 

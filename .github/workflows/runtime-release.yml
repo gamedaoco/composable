@@ -2,7 +2,7 @@ name: Runtime Release
 on:
   push:
     branches:
-      - 'release/**'
+      - 'nn/**'
 
 jobs:
   docker-build:
@@ -53,9 +53,7 @@ jobs:
       - name: Build and Release Parachain Utils Binary
         run: |
           /home/runner/.cargo/bin/cargo build --release -p parachain-utils
-          zip -r target.zip target/
           gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
-          gsutil cp target.zip gs://composable-binaries/releases/client/v0.1.0/
 
       - name: Run runtime upgrade on RPC Node
         uses: appleboy/ssh-action@master
