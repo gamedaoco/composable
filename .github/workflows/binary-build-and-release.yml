@@ -28,6 +28,15 @@ jobs:
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
 
+      - name: Install toolchain
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          source $HOME/.cargo/env
+          rustup default stable
+          rustup update nightly
+          rustup update stable
+          rustup target add wasm32-unknown-unknown --toolchain nightly
+
       - name: Build Composable Binary
         run: |
           BUILD_PROFILE=composable make build
@@ -45,14 +54,6 @@ jobs:
       - sre
     steps: 
       - uses: actions/checkout@v2
-      - name: Install toolchain
-        run: |
-          curl https://sh.rustup.rs -sSf | sh -s -- -y
-          source $HOME/.cargo/env
-          rustup default stable
-          rustup update nightly
-          rustup update stable
-          rustup target add wasm32-unknown-unknown --toolchain nightly
 
       - name: Package Build Release as Artifacts
         run: |
