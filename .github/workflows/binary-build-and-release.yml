@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Composable Binary
         run: |
-          BUILD_PROFILE=composable make build
+          /home/runner/.cargo/bin/cargo build --release -p composable
 
       - name: Build Parachain Utils Binary
         run: |
