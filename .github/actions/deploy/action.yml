@@ -1,0 +1,5 @@
+name: 'Deploy'
+descript: 'Makes deployment to the comosable testnet'
+runs:
+ using: 'docker'
+ image: 'Dockerfile'

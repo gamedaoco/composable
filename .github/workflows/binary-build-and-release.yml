@@ -40,6 +40,10 @@ jobs:
       - name: Build Parachain Utils Binary
         run: |
           /home/runner/.cargo/bin/cargo build --release -p parachain-utils
+        
+      - name: Build Faucet Server Binary
+        run: |
+          /home/runner/.cargo/bin/cargo build --release -p faucet-server
 
       - name: Package Build Release as Artifacts
         run: |
