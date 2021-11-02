@@ -18,18 +18,11 @@ WORKDIR /composable
 
 COPY . /composable
 
+
 RUN cargo build --release
 
 RUN cp -R /composable/target/release /usr/local/bin
 
-
-
-
-### STAGE 2 ###
-# FROM debian:buster-slim
-# LABEL description="This is the 2nd stage: a very small image where we copy the Composable binary."
-# ARG PROFILE=release
-# COPY --from=builder /composable/target/$PROFILE/node-template /usr/local/bin
 
 RUN useradd -m -u 1000 -U -s /bin/sh -d /composable composable && \
 	mkdir -p /composable/.local/share && \

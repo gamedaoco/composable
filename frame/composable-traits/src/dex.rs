@@ -1,5 +1,12 @@
-use frame_support::sp_runtime::Perbill;
-use sp_runtime::{DispatchError, Permill};
+#![allow(dead_code)]
+#![allow(clippy::many_single_char_names)]
+use frame_support::{
+	codec::{Decode, Encode},
+	sp_runtime::Perbill,
+};
+use sp_runtime::{DispatchError, FixedU128, Permill};
+
+use sp_std::vec::Vec;
 
 /// Describes a simple exchanges which does not allow advanced configurations such as slippage.
 pub trait SimpleExchange {
@@ -68,4 +75,25 @@ pub trait Orderbook {
 	) -> Result<TakeResult<Self::Balance>, DispatchError>;
 
 	fn is_order_executed(order_id: &Self::OrderId) -> bool;
+}
+
+/// Implement AMM curve from "StableSwap - efficient mechanism for Stablecoin liquidity by Micheal
+/// Egorov" Also blog at https://miguelmota.com/blog/understanding-stableswap-curve/ has very good explanation.
+
+/// Type that represents pool id
+pub type PoolId = u32;
+
+/// Pool type
+#[derive(Encode, Decode, Clone, Default, PartialEq, Eq, Debug)]
+pub struct PoolInfo<AccountId, AssetId, Balance> {
+	/// Owner of pool
+	pub owner: AccountId,
+	/// LP multiasset
+	pub pool_asset: AssetId,
+	/// List of multiasset supported by the pool
+	pub assets: Vec<AssetId>,
+	/// Initial amplification coefficient
+	pub amplification_coefficient: FixedU128,
+	/// Current balances
+	pub balances: Vec<Balance>,
 }

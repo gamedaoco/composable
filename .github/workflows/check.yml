@@ -20,7 +20,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-09-01
+          toolchain: nightly
           override: true
       - uses: actions-rs/cargo@v1
       - name: Cargo Check
@@ -41,12 +41,12 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-09-01
+          toolchain: nightly
           components: clippy
           override: true
       - name: Cargo fmt
         run: |
-          rustup component add rustfmt --toolchain nightly-2021-09-01-x86_64-unknown-linux-gnu
+          rustup component add rustfmt --toolchain nightly-x86_64-unknown-linux-gnu
           cargo fmt -- --check
       - name: Hadolint
         env:
@@ -55,7 +55,6 @@ jobs:
           curl -L -o hadolint "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
           chmod +x hadolint
           ./hadolint --version
-
           total_exit_code=0
           while IFS= read -r file; do
             echo "=== $file ==="
@@ -68,7 +67,7 @@ jobs:
           SKIP_WASM_BUILD=1 cargo clippy -- -D warnings
       - name: Cargo udeps
         env:
-          UDEPS_VERSION: v0.1.23
+          UDEPS_VERSION: v0.1.24
         run: |
           rustup target add wasm32-unknown-unknown
           curl -L -O "https://github.com/est31/cargo-udeps/releases/download/${UDEPS_VERSION}/cargo-udeps-${UDEPS_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
@@ -76,7 +75,6 @@ jobs:
           cp "cargo-udeps-${UDEPS_VERSION}-x86_64-unknown-linux-gnu/cargo-udeps" ~/.cargo/bin/
           rm -r "cargo-udeps-${UDEPS_VERSION}-x86_64-unknown-linux-gnu.tar.gz" "cargo-udeps-${UDEPS_VERSION}-x86_64-unknown-linux-gnu"
           cargo udeps --version
-
           total_exit_code=0
           while IFS= read -r crate; do
             echo "=== $crate ==="
@@ -96,7 +94,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly-2021-09-01
+          toolchain: nightly
           override: true
       - name: Run Test
         run: |
