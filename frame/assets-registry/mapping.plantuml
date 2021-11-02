@@ -53,7 +53,16 @@ bob -> assets_registry_hydra_dx : RCP: What is list of assets for Composable?
 ...
 
 
-dex --> xcm: Transfer sold amount
+
+alt Callback
+  dex --> xcm: Transfer sold amount
+else Ask for back transfer with
+  composable --> xcm: send messages which upon getting to HydraDX starts back transfer
+  note right
+    - should consider attack of having too many small collaterals and burning our money on Relay
+    - direct XCM not yet well supported
+  end note
+end
 
 xcm --> assets_pallet : Transfer
 
