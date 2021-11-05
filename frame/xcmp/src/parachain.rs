@@ -155,20 +155,21 @@ use frame_system::pallet_prelude::OriginFor;
 		pub fn ping(origin: OriginFor<T>, seq: u32, payload: Vec<u8>) -> DispatchResult {
 			PingCount::<T>::set(seq);
 			let hydra_via_relay = (1, Junction::Parachain(HYDRADX));
-			let call = Call::<T>::ping {
-				seq,
-				payload: payload.clone(),
-			};
-			let ping = Transact {
-					origin_type: OriginKind::Native,
-					require_weight_at_most: 1_000,
-					call: <T as frame_system::Config>::Call::from(call)
-					.encode()
-					.into(),
-				};
-			T::XcmSender::send_xcm(
-				hydra_via_relay,
-				Xcm(vec![])).expect("just for test");
+			// let call = Call::<T>::ping {
+			// 	seq,
+			// 	payload: payload.clone(),
+			// };
+			todo!();
+			// let ping = Transact {
+			// 		origin_type: OriginKind::Native,
+			// 		require_weight_at_most: 1_000,
+			// 		call: <T as frame_system::Config>::Call::from(call)
+			// 		.encode()
+			// 		.into(),
+			// 	};
+			// T::XcmSender::send_xcm(
+			// 	hydra_via_relay,
+			// 	Xcm(vec![])).expect("just for test");
 
 			Ok(())
 		}
