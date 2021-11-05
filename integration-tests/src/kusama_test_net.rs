@@ -1,5 +1,5 @@
 //pub use picasso_runtime::AccountId;
-use xcm_emulator::*;
+///use xcm_emulator::*;
 //pub use picasso_runtime::AccountId;
 
 pub const ALICE: [u8; 32] = [4u8; 32];
