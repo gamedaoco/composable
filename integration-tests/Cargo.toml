@@ -1,0 +1,15 @@
+[package]
+name = "runtime-integration-tests"
+version = "0.0.1"
+authors = ["Composable Developers"]
+homepage = "https://composable.finance"
+edition = "2018"
+
+
+[dependencies]
+
+
+kusama-runtime = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.11" }
+picasso-runtime = { path = "../runtime/picasso", default-features = false}
+sp-io = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
+xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator", rev = "4d3bb9dd4fa2cd554a9970ffff816d9346269eaa" }
