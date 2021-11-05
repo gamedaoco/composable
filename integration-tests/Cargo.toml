@@ -66,7 +66,7 @@ session-benchmarking = { package = "cumulus-pallet-session-benchmarking", git = 
 smallvec = "1.6.1"
 
 
-kusama-runtime = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.11" }
+#kusama-runtime = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.11" }
 node-primitives = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 polkadot-primitives = { git = "https://github.com/paritytech/polkadot", tag = "v0.9.11", default-features = false }
 polkadot-runtime-common = { git = "https://github.com/paritytech/polkadot", tag = "v0.9.11", default-features = false }
@@ -87,7 +87,7 @@ sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 sp-trie = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 sp-version = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
-#xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator", rev = "4d3bb9dd4fa2cd554a9970ffff816d9346269eaa", default-features = false }
+xcm-emulator = { git = "https://github.com/shaunxw/xcm-simulator", rev = "4d3bb9dd4fa2cd554a9970ffff816d9346269eaa", default-features = false }
 
 sudo = { package = "pallet-sudo", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
 support = { package = "frame-support", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.11", default-features = false }
@@ -126,7 +126,7 @@ std = [
 	"cumulus-primitives-core/std",
 	"cumulus-primitives-timestamp/std",
 	"cumulus-primitives-utility/std",
-	"kusama-runtime/std",
+	#"kusama-runtime/std",
 	"node-primitives/std",
 	"polkadot-primitives/std",
 	"polkadot-runtime-common/std",
@@ -171,7 +171,6 @@ std = [
 	"utility/std",
 	"vault/std",
 	"xcm-builder/std",
-	"xcm-executor/std",
 	"xcm/std",
 	"xcmp/std",
     "frame-system/std",
