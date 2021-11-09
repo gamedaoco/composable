@@ -5,7 +5,6 @@ on:
       - 'release/**'
 
 env:
-  PROJECT_ID: ${{ secrets.GCE_PROJECT }}
   CLOUDSDK_CORE_DISABLE_PROMPTS: 1
   ROOT_KEY: ${{ secrets.ROOT_KEY }}
   SLACK_SIGNING_KEY: ${{ secrets.SLACK_SIGNING_KEY }}
@@ -25,21 +24,6 @@ jobs:
       - name: Set env
         run: echo "RELEASE_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
 
-      - name: Test
-        run: |
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
-
-      - name: Build and Push Artifacts to gcloud
-        run: |
-          /home/runner/.cargo/bin/cargo build --release -p composable
-          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
-          /home/runner/.cargo/bin/cargo build --release -p rotate-keys
-          gsutil cp target/release/composable gs://composable-binaries/releases/client/v0.1.0/ 
-          gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
-          gsutil cp target/release/rotate-keys gs://composable-binaries/releases/client/v0.1.0/  
-          gsutil cp target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm gs://composable-binaries/releases/client/v0.1.0/ 
-
       - name: Install toolchain
         run: |
           curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -51,37 +35,43 @@ jobs:
           rustup target add wasm32-unknown-unknown --toolchain nightly
 
     
-#  runtime-upgrade:
-#    runs-on:
-#      - self-hosted
-#      - linux
-#      - x64
-#      - sre
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@master
-#        with:
-#          project_id: ${{ secrets.GCP_PROJECT_ID }}
-#          service_account_key: ${{ secrets.GCP_SA_KEY }}
-#          export_default_credentials: true
-#
-#      - name: Build and Push Artifacts to gcloud
-#        run: |
-#          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
-#          /home/runner/.cargo/bin/cargo build --release -p picasso-runtime
-#          gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
-#          gsutil cp target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm gs://composable-binaries/releases/client/v0.1.0/
-#
-#      - name: Connect to rpc node and runtime upgrade
-#        run: |
-#          gcloud beta compute ssh --quiet --zone "europe-central2-c" "rpcnode-tough-louse-rfqm"  --project "composable-ops-5568"
-#          printenv
-#          gsutil cp gs://composable-binaries/releases/client/v0.1.0/picasso_runtime.compact.wasm .
-#          gsutil cp gs://composable-binaries/releases/client/v0.1.0/parachain-utils .
-#          chmod +x parachain-utils
-#          RUST_LOG=debug ./parachain-utils upgrade-runtime --path ./picasso_runtime.compact.wasm
+  runtime-upgrade:
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - sre
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - name: Build and Push Artifacts to gcloud
+        run: |
+          /home/runner/.cargo/bin/cargo build --release -p composable
+          /home/runner/.cargo/bin/cargo build --release -p parachain-utils
+          /home/runner/.cargo/bin/cargo build --release -p faucet-server
+          /home/runner/.cargo/bin/cargo build --release -p picasso-runtime
+          gsutil cp target/release/composable gs://composable-binaries/releases/client/v0.1.0/ 
+          gsutil cp target/release/parachain-utils gs://composable-binaries/releases/client/v0.1.0/
+          gsutil cp target/release/faucet-server gs://composable-binaries/releases/client/v0.1.0/  
+          gsutil cp target/release/wbuild/picasso-runtime/picasso_runtime.compact.wasm gs://composable-binaries/releases/client/v0.1.0/ 
+
+      - name: Connect to rpc node and runtime upgrade
+        run: |
+          gcloud beta compute ssh --zone "europe-west1-d" "parachain-artistic-ox-5gwx"  --project "composable-ops-5568"
+          printenv
+          gsutil cp gs://composable-binaries/releases/client/v0.1.0/picasso_runtime.compact.wasm .
+          gsutil cp gs://composable-binaries/releases/client/v0.1.0/composable .
+          gsutil cp gs://composable-binaries/releases/client/v0.1.0/faucet-server .
+          gsutil cp gs://composable-binaries/releases/client/v0.1.0/parachain-utils .
+          chmod +x parachain-utils
+          ./parachain-utils upgrade-runtime --path ./picasso_runtime.compact.wasm
 
   
