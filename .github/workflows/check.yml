@@ -29,7 +29,14 @@ jobs:
           SKIP_WASM_BUILD=1 cargo check --all --benches
       - name: Cargo Check Benchmark
         run: |
+<<<<<<< HEAD
           cargo check --features=runtime-benchmarks --release
+=======
+          SKIP_WASM_BUILD=1 cargo check --features=runtime-benchmarks --release
+      - name: Picasso Runtime Build
+        run: |
+          cargo build --release -p picasso-runtime
+>>>>>>> 49908919f359174fb52e6048c28d666caeb7ce33
   linters:
     name: Linters
     runs-on:
