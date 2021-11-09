@@ -5925,6 +5925,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-lp-staking"
+version = "0.1.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-balances",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "smallvec 1.7.0",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-membership"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.11#57346f6b24875f8935280dba51fa8ab0a9ba1e39"
