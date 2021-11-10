@@ -1,9 +1,33 @@
 //! Setup of XCMP for parachain.
 use super::{AssetId, *}; // recursive dependency onto runtime
 
+use codec::{Decode, Encode};
+use cumulus_primitives_core::ParaId;
+use support::traits::{Everything, Nothing};
+use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
+use sp_runtime::traits::Convert;
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
+use xcm::latest::Error;
+use xcm_executor::traits::WeightTrader;
+use xcm_executor::{Assets, Config, XcmExecutor};
+use polkadot_parachain::primitives::Sibling;
+use pallet_xcm::XcmPassthrough;
+use xcm_builder::{
+	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, EnsureXcmOrigin, FixedWeightBounds, LocationInverter,
+	ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
+	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
+};
 
+/// here we should allow only from hydradx/acala
+/// may be without credit
+pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
+
+/// No local origins on this chain are allowed to dispatch XCM sends/executions.
+/// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
+pub type LocalOriginToLocation = ();
+
+//pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
 
 /// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
@@ -50,8 +74,62 @@ pub type XcmOriginToTransactDispatchOrigin = (
 	XcmPassthrough<Origin>,
 );
 
+struct Todo;
+
+// so if we have to use ORML stuff to simplify XCMP, need to impl on our trait, or need to implement(copy) custom stuff (akala/hydra uses ORML)
+impl orml_traits::MultiCurrency<AccountId> for Todo {
+    type CurrencyId = CurrencyId;
+
+    type Balance = <Runtime as balances::Config>::Balance;
+
+    fn minimum_balance(currency_id: Self::CurrencyId) -> Self::Balance {
+        todo!()
+    }
+
+    fn total_issuance(currency_id: Self::CurrencyId) -> Self::Balance {
+        todo!()
+    }
+
+    fn total_balance(currency_id: Self::CurrencyId, who: &AccountId) -> Self::Balance {
+        todo!()
+    }
+
+    fn free_balance(currency_id: Self::CurrencyId, who: &AccountId) -> Self::Balance {
+        todo!()
+    }
+
+    fn ensure_can_withdraw(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
+        todo!()
+    }
+
+    fn transfer(
+		currency_id: Self::CurrencyId,
+		from: &AccountId,
+		to: &AccountId,
+		amount: Self::Balance,
+	) -> sp_runtime::DispatchResult {
+        todo!()
+    }
+
+    fn deposit(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
+        todo!()
+    }
+
+    fn withdraw(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
+        todo!()
+    }
+
+    fn can_slash(currency_id: Self::CurrencyId, who: &AccountId, value: Self::Balance) -> bool {
+        todo!()
+    }
+
+    fn slash(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> Self::Balance {
+        todo!()
+    }
+}
+
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	Currencies,
+	Todo, //	Currencies,
 	UnknownTokens,
 	IsNativeConcrete<AssetId, CurrencyIdConvert>,
 	AccountId,
@@ -67,7 +145,7 @@ impl xcm_executor::Config for XcmConfig {
 	type XcmSender = XcmRouter;
 	// How to withdraw and deposit an asset.
 	//type AssetTransactor = ();
-	type AssetTransactor = LocalAssetTransactor;
+	type AssetTransactor = ();//LocalAssetTransactor;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
 	type IsReserve = NativeAsset;
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
@@ -85,9 +163,6 @@ parameter_types! {
 	pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::get().into())));
 }
 
-/// No local origins on this chain are allowed to dispatch XCM sends/executions.
-/// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
-pub type LocalOriginToLocation = ();
 
 parameter_types! {
 	/// The amount of weight an XCM operation takes. This is a safe overestimate.
@@ -113,9 +188,20 @@ impl orml_unknown_tokens::Config for Runtime {
 }
 
 
+pub struct AccountIdToMultiLocation;
+impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
+	fn convert(account: AccountId) -> MultiLocation {
+		X1(AccountId32 {
+			network: NetworkId::Any,
+			id: account.into(),
+		})
+		.into()
+	}
+}
+
 pub struct CurrencyIdConvert;
 
-impl Convert<AssetId, Option<MultiLocation>> for CurrencyIdConvert {
+impl sp_runtime::traits::Convert<AssetId, Option<MultiLocation>> for CurrencyIdConvert {
 	fn convert(id: AssetId) -> Option<MultiLocation> {
 		todo!("here call our asset registry")
 		// match id {
