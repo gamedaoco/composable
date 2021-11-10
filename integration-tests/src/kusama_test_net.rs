@@ -1,5 +1,5 @@
 use common::AccountId;
-use cumulus_primitives_core::ParaId;
+use cumulus_primitives_core::{ParaId, XcmpMessageHandler};
 use polkadot_primitives::v1::{BlockNumber, MAX_CODE_SIZE, MAX_POV_SIZE};
 use polkadot_runtime_parachains::configuration::HostConfiguration;
 use primitives::currency::CurrencyId;
@@ -15,13 +15,34 @@ pub const PICASSO_PARA_ID: u32 = 2000;
 pub const DALI_PARA_ID: u32 = 2001;
 
 // null handler for now, so need to find existing impl (or copy paste from simulator example)
-type XcmpMessageHandler = ();
+type SilentMessageHandler = ();
+
+struct LoggingMessageHandler;
+impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandler {
+    fn handle_xcmp_messages<'a, I: Iterator<Item = (ParaId, BlockNumber, &'a [u8])>>(
+		iter: I,
+		max_weight: picasso_runtime::Weight,
+	) -> picasso_runtime::Weight {
+		dbg!("asdasdadads");
+        todo!("fuck")
+    }
+}
+
+impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler {
+    fn handle_dmp_messages(
+		iter: impl Iterator<Item = (BlockNumber, Vec<u8>)>,
+		max_weight: picasso_runtime::Weight,
+	) -> picasso_runtime::Weight {
+		dbg!("asdsadaadasdsad");
+        todo!("qwe")
+    }
+}
 
 decl_test_parachain! {
 	pub struct Picasso {
 		Runtime = picasso_runtime::Runtime,
-		XcmpMessageHandler = XcmpMessageHandler,
-		DmpMessageHandler = XcmpMessageHandler,
+		XcmpMessageHandler = LoggingMessageHandler,
+		DmpMessageHandler = LoggingMessageHandler,
 		new_ext = picasso_ext(PICASSO_PARA_ID),
 	}
 }
@@ -31,8 +52,8 @@ decl_test_parachain! {
 decl_test_parachain! {
 	pub struct Dali {
 		Runtime = picasso_runtime::Runtime,
-		XcmpMessageHandler = XcmpMessageHandler,
-		DmpMessageHandler = XcmpMessageHandler,
+		XcmpMessageHandler = LoggingMessageHandler,
+		DmpMessageHandler = LoggingMessageHandler,
 		new_ext = picasso_ext(DALI_PARA_ID),
 	}
 }

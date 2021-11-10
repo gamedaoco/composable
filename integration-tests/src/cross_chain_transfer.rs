@@ -12,11 +12,12 @@ use xcm_simulator::TestExt;
 
 #[test]
 fn transfer_from_relay_chain() {
+
     KusamaRelay::execute_with(|| {
         let version = kusama_runtime::XcmPallet::force_default_xcm_version
         (
             kusama_runtime::Origin::root(),
-            Some(0),
+            Some(1),
         );
         assert_ok!(version);
 
@@ -30,7 +31,7 @@ fn transfer_from_relay_chain() {
                 }.into().into(),
             ),
             Box::new((Here, 3 * PICA).into()),
-            0
+            0,
         );
         assert_ok!(transfered);
     });
