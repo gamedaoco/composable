@@ -89,6 +89,13 @@ xcm-executor = { git = "https://github.com/paritytech/polkadot", branch = "relea
 pallet-xcm = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.12", default-features = false }
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
+# orml XCM support
+orml-xtokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "ee37b76a7a8cf159e6c41851942758746318bb84", default-features = false }
+orml-xcm-support = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "ee37b76a7a8cf159e6c41851942758746318bb84", default-features = false }
+orml-unknown-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "ee37b76a7a8cf159e6c41851942758746318bb84", default-features = false }
+
+
+
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12" }
 
@@ -146,6 +153,9 @@ std = [
 	"aura/std",
 	"sp-consensus-aura/std",
     "scale-info/std",
+	"orml-xtokens/std",
+    "orml-xcm-support/std",
+    "orml-unknown-tokens/std",
 ]
 runtime-benchmarks = [
 	"benchmarking",
