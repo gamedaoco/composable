@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+mod xcmp;
 mod weights;
 use common::{
 	impls::DealWithFees, AccountId, AccountIndex, Address, Amount, AuraId, Balance, BlockNumber,
@@ -513,15 +514,6 @@ impl xcm_executor::Config for XcmConfig {
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
 /// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
 pub type LocalOriginToLocation = ();
-
-/// The means for routing XCM messages which are not for local execution into the right message
-/// queues.
-pub type XcmRouter = (
-	// Two routers - use UMP to communicate with the relay chain:
-	cumulus_primitives_utility::ParentAsUmp<ParachainSystem, ()>,
-	// ..and XCMP to communicate with the sibling chains.
-	XcmpQueue,
-);
 
 
 
