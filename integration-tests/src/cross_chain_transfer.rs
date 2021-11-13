@@ -14,12 +14,12 @@ use xcm_simulator::TestExt;
 fn transfer_from_relay_chain() {
 
     KusamaRelay::execute_with(|| {
-        let version = kusama_runtime::XcmPallet::force_default_xcm_version
-        (
-            kusama_runtime::Origin::root(),
-            Some(1),
-        );
-        assert_ok!(version);
+        // let version = kusama_runtime::XcmPallet::force_default_xcm_version
+        // (
+        //     kusama_runtime::Origin::root(),
+        //     Some(1),
+        // );
+        // assert_ok!(version);
 
         let transfered = kusama_runtime::XcmPallet::reserve_transfer_assets(
             kusama_runtime::Origin::signed(ALICE.into()),

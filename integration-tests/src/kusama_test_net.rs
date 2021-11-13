@@ -15,7 +15,7 @@ pub const PICASSO_PARA_ID: u32 = 2000;
 pub const DALI_PARA_ID: u32 = 2001;
 
 // null handler for now, so need to find existing impl (or copy paste from simulator example)
-type SilentMessageHandler = ();
+//type SilentMessageHandler = ();
 
 struct LoggingMessageHandler;
 impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandler {
@@ -131,6 +131,11 @@ pub fn kusama_ext() -> sp_io::TestExternalities {
 	.assimilate_storage(&mut storage)
 	.unwrap();
 
+	<pallet_xcm::GenesisConfig as GenesisBuild<Runtime>>::assimilate_storage(
+		&pallet_xcm::GenesisConfig {
+			safe_xcm_version : Some(2)
+		},
+		&mut storage).unwrap();
 	let mut externalities = sp_io::TestExternalities::new(storage);
 	externalities.execute_with(|| System::set_block_number(1));
 	externalities

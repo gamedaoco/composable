@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 //! Setup of XCMP for parachain.
-use super::{AssetId, *}; // recursive dependency onto runtime
+use super::{*}; // recursive dependency onto runtime
 
 use codec::{Decode, Encode};
 use cumulus_primitives_core::ParaId;
@@ -32,33 +32,45 @@ use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 use xcm::latest::Error;
-use xcm_executor::traits::WeightTrader;
+use xcm_executor::traits::{ShouldExecute, WeightTrader};
 use xcm_executor::{Assets, Config, XcmExecutor};
 use polkadot_parachain::primitives::Sibling;
 use pallet_xcm::XcmPassthrough;
-use xcm_builder::{
-	AccountId32Aliases, AllowTopLevelPaidExecutionFrom, EnsureXcmOrigin, FixedWeightBounds, LocationInverter,
-	ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
-	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
-};
+use xcm_builder::{AccountId32Aliases, AllowKnownQueryResponses, AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, EnsureXcmOrigin, FixedWeightBounds, LocationInverter, ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit};
 
 /// here we should allow only from hydradx/acala
 /// may be without credit
 //pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
 
 
-pub type Barrier = (
-	TakeWeightCredit,
-	AllowTopLevelPaidExecutionFrom<Everything>,
-	AllowUnpaidExecutionFrom<SpecParachain>,
-);
+impl ShouldExecute for Todo {
+	fn should_execute<Call>(
+		_origin: &MultiLocation,
+		_message: &mut Xcm<Call>,
+		max_weight: Weight,
+		weight_credit: &mut Weight,
+	) -> Result<(), ()> {
+		todo!("asdsad")
+	}
+}
+
+pub type Barrier = (Todo);
+
+// pub type Barrier = (
+// 	TakeWeightCredit,
+// 	AllowTopLevelPaidExecutionFrom<Everything>,
+// 	AllowUnpaidExecutionFrom<SpecParachain>,
+// 	// Expected responses are OK.
+// 	AllowKnownQueryResponses<PolkadotXcm>,
+// 	// Subscriptions for version tracking are OK.
+// 	AllowSubscriptionsFrom<Everything>,
+// );
 
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
 /// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
-pub type LocalOriginToLocation = ();
-
-//pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
+//pub type LocalOriginToLocation = ();
+pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
 
 /// The means for routing XCM messages which are not for local execution into the right message
 /// queues.
@@ -105,7 +117,7 @@ pub type XcmOriginToTransactDispatchOrigin = (
 	XcmPassthrough<Origin>,
 );
 
-struct Todo;
+pub struct Todo;
 
 // so if we have to use ORML stuff to simplify XCMP, need to impl on our trait, or need to implement(copy) custom stuff (akala/hydra uses ORML)
 impl orml_traits::MultiCurrency<AccountId> for Todo {
@@ -162,10 +174,10 @@ impl orml_traits::MultiCurrency<AccountId> for Todo {
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
 	Todo, //	Currencies,
 	UnknownTokens,
-	IsNativeConcrete<AssetId, CurrencyIdConvert>,
+	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
 	AccountId,
 	LocationToAccountId,
-	AssetId,
+	CurrencyId,
 	CurrencyIdConvert,
 >;
 
@@ -177,17 +189,28 @@ parameter_types! {
 }
 
 
+pub struct TradePassthrough();
+
+/// any payment to pass
+impl WeightTrader for TradePassthrough {
+	fn new() -> Self {
+		Self()
+	}
+
+	fn buy_weight(&mut self, _weight: Weight, payment: Assets) -> Result<Assets, Error> {
+		// Just let it through for now
+		Ok(payment)
+	}
+}
 
 pub struct XcmConfig;
-
-
 
 impl xcm_executor::Config for XcmConfig {
 	type Call = Call;
 	type XcmSender = XcmRouter;
 	// How to withdraw and deposit an asset.
 	//type AssetTransactor = ();
-	type AssetTransactor = ();//LocalAssetTransactor;
+	type AssetTransactor = LocalAssetTransactor;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
 	type IsReserve = NativeAsset;
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
@@ -195,11 +218,13 @@ impl xcm_executor::Config for XcmConfig {
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
 	type Trader = ();
+	type Trader = TradePassthrough;
 	type ResponseHandler = (); // Don't handle responses for now.
 	type SubscriptionService = PolkadotXcm;
 	type AssetClaims = PolkadotXcm;
 	type AssetTrap = PolkadotXcm;
 }
+
 
 parameter_types! {
 	pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::parachain_id().into())));
@@ -209,7 +234,7 @@ parameter_types! {
 impl orml_xtokens::Config for Runtime {
 	type Event = Event;
 	type Balance = Balance;
-	type CurrencyId = AssetId;
+	type CurrencyId = CurrencyId;
 	type CurrencyIdConvert = CurrencyIdConvert;
 	type AccountIdToMultiLocation = AccountIdToMultiLocation;
 	type SelfLocation = SelfLocation;
@@ -237,8 +262,8 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 
 pub struct CurrencyIdConvert;
 
-impl sp_runtime::traits::Convert<AssetId, Option<MultiLocation>> for CurrencyIdConvert {
-	fn convert(id: AssetId) -> Option<MultiLocation> {
+impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
+	fn convert(id: CurrencyId) -> Option<MultiLocation> {
 		todo!("here call our asset registry")
 		// match id {
 		// 	0 => Some(MultiLocation::new(
@@ -252,6 +277,48 @@ impl sp_runtime::traits::Convert<AssetId, Option<MultiLocation>> for CurrencyIdC
 		// 			None
 		// 		}
 		// 	}
+		// }
+	}
+}
+
+/// converts from Relay parent chain to child chain currency
+/// expected that currency in location is in format well known for local chain
+impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
+	fn convert(location: MultiLocation) -> Option<CurrencyId> {
+		todo!("convert")
+		// match location {
+		// 	MultiLocation {
+		// 		parents,
+		// 		interior: X2(Parachain(id), GeneralKey(key)),
+		// 	} if parents == 1 && ParaId::from(id) == ParachainInfo::get() => {
+		// 		// Handling native asset for this parachain
+		// 		if let Ok(currency_id) = AssetId::decode(&mut &key[..]) {
+		// 			// we currently have only one native asset
+		// 			match currency_id {
+		// 				0 => Some(currency_id),
+		// 				_ => None,
+		// 			}
+		// 		} else {
+		// 			None
+		// 		}
+		// 	}
+		// 	// delegate to asset-registry
+		// 	_ => AssetRegistry::location_to_asset(AssetLocation(location)),
+		// }
+	}
+}
+
+
+impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
+	fn convert(asset: MultiAsset) -> Option<CurrencyId> {
+		todo!()
+		// if let MultiAsset {
+		// 	id: Concrete(location), ..
+		// } = asset
+		// {
+		// 	Self::convert(location)
+		// } else {
+		// 	None
 		// }
 	}
 }

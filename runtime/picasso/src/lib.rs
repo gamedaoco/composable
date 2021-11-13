@@ -437,8 +437,6 @@ parameter_types! {
 }
 
 
-
-
 parameter_types! {
 	pub const UncleGenerations: u32 = 0;
 }
