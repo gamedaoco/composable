@@ -217,9 +217,10 @@ impl xcm_executor::Config for XcmConfig {
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
-	type Trader = ();
+	//type Trader = ();
 	type Trader = TradePassthrough;
-	type ResponseHandler = (); // Don't handle responses for now.
+	//type ResponseHandler = (); // Don't handle responses for now.
+	type ResponseHandler = PolkadotXcm; // Don't handle responses for now.
 	type SubscriptionService = PolkadotXcm;
 	type AssetClaims = PolkadotXcm;
 	type AssetTrap = PolkadotXcm;

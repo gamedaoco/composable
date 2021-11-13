@@ -12,7 +12,7 @@ use xcm_simulator::TestExt;
 
 #[test]
 fn transfer_from_relay_chain() {
-
+    // here we should add asset to registry
     KusamaRelay::execute_with(|| {
         // let version = kusama_runtime::XcmPallet::force_default_xcm_version
         // (
@@ -42,3 +42,29 @@ fn transfer_from_relay_chain() {
         assert_eq!(balance, 3 * PICA);
     });
 }
+
+#[test]
+fn transfer_to_relay_chain() {
+    Picasso::execute_with(|| {
+            let transfered = picasso_runtime::XTokens::transfer(
+                picasso_runtime::Origin::signed(ALICE.into()),
+                CurrencyId::PICA,
+                3 * PICA,
+                Box::new(
+                    MultiLocation::new(
+                        1,
+                        X1(Junction::AccountId32 {
+                            id : BOB,
+                            network: NetworkId::Any,
+                        })
+                    ).into()
+                ),
+                4_600_000_000);
+            assert_ok!(transfered);
+    });
+}
+
+
+
+
+
