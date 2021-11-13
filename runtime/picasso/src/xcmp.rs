@@ -50,7 +50,7 @@ impl ShouldExecute for Todo {
 		max_weight: Weight,
 		weight_credit: &mut Weight,
 	) -> Result<(), ()> {
-		todo!("asdsad")
+		Ok(())
 	}
 }
 
@@ -155,11 +155,11 @@ impl orml_traits::MultiCurrency<AccountId> for Todo {
     }
 
     fn deposit(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
-        todo!()
+        Ok(())
     }
 
     fn withdraw(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
-        todo!()
+        Ok(())
     }
 
     fn can_slash(currency_id: Self::CurrencyId, who: &AccountId, value: Self::Balance) -> bool {
@@ -261,24 +261,25 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 	}
 }
 
+
+
+pub struct AssetRegistry;
+impl AssetRegistry {
+	pub fn asset_to_location(id: CurrencyId) -> Option<MultiLocation> {
+		Some(MultiLocation::new(
+			1,
+			X2(Parachain(ParachainInfo::parachain_id().into()), GeneralKey(id.encode())),
+		))
+	}
+}
+
+
 pub struct CurrencyIdConvert;
+
 
 impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<MultiLocation> {
-		todo!("here call our asset registry")
-		// match id {
-		// 	0 => Some(MultiLocation::new(
-		// 		1,
-		// 		X2(Parachain(ParachainInfo::get().into()), GeneralKey(id.encode())),
-		// 	)),
-		// 	_ => {
-		// 		if let Some(loc) = AssetRegistry::asset_to_location(id) {
-		// 			Some(loc.0)
-		// 		} else {
-		// 			None
-		// 		}
-		// 	}
-		// }
+		AssetRegistry::asset_to_location(id)
 	}
 }
 
@@ -286,41 +287,35 @@ impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for Currency
 /// expected that currency in location is in format well known for local chain
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(location: MultiLocation) -> Option<CurrencyId> {
-		todo!("convert")
-		// match location {
-		// 	MultiLocation {
-		// 		parents,
-		// 		interior: X2(Parachain(id), GeneralKey(key)),
-		// 	} if parents == 1 && ParaId::from(id) == ParachainInfo::get() => {
-		// 		// Handling native asset for this parachain
-		// 		if let Ok(currency_id) = AssetId::decode(&mut &key[..]) {
-		// 			// we currently have only one native asset
-		// 			match currency_id {
-		// 				0 => Some(currency_id),
-		// 				_ => None,
-		// 			}
-		// 		} else {
-		// 			None
-		// 		}
-		// 	}
-		// 	// delegate to asset-registry
-		// 	_ => AssetRegistry::location_to_asset(AssetLocation(location)),
-		// }
+		match location {
+			MultiLocation {
+				parents,
+				interior: X2(Parachain(id), GeneralKey(key)),
+			} if parents == 1 && ParaId::from(id) == ParachainInfo::parachain_id() => {
+				// Handling native asset for this parachain
+				if let Ok(currency_id) = CurrencyId::decode(&mut &key[..]) {
+					Some(currency_id)
+				} else {
+					None
+				}
+			}
+			_ => todo!("convert remote location into local"),
+		}
 	}
 }
 
 
+// covert remote to local
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(asset: MultiAsset) -> Option<CurrencyId> {
-		todo!()
-		// if let MultiAsset {
-		// 	id: Concrete(location), ..
-		// } = asset
-		// {
-		// 	Self::convert(location)
-		// } else {
-		// 	None
-		// }
+		if let MultiAsset {
+			id: Concrete(location), ..
+		} = asset
+		{
+			Self::convert(location)
+		} else {
+			None
+		}
 	}
 }
 
