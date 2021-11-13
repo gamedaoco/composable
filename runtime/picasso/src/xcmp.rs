@@ -1,11 +1,34 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 //! Setup of XCMP for parachain.
 use super::{AssetId, *}; // recursive dependency onto runtime
 
 use codec::{Decode, Encode};
 use cumulus_primitives_core::ParaId;
-use support::traits::{Everything, Nothing};
+use support::{
+	construct_runtime, match_type, parameter_types,
+	traits::{Contains, Everything, KeyOwnerProofSystem, Nothing, Randomness, StorageInfo},
+	weights::{
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
+		DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
+		WeightToFeePolynomial,
+	},
+	PalletId, StorageValue,
+};
+
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
-use sp_runtime::traits::Convert;
+
+use sp_runtime::{
+	create_runtime_str, generic, impl_opaque_keys,
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, Convert, Zero},
+	transaction_validity::{TransactionSource, TransactionValidity},
+	ApplyExtrinsicResult,
+};
+
+use orml_traits::parameter_type_with_key;
+use sp_api::impl_runtime_apis;
+use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 use xcm::latest::Error;
@@ -21,7 +44,15 @@ use xcm_builder::{
 
 /// here we should allow only from hydradx/acala
 /// may be without credit
-pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
+//pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
+
+
+pub type Barrier = (
+	TakeWeightCredit,
+	AllowTopLevelPaidExecutionFrom<Everything>,
+	AllowUnpaidExecutionFrom<SpecParachain>,
+);
+
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
 /// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
@@ -138,7 +169,18 @@ pub type LocalAssetTransactor = MultiCurrencyAdapter<
 	CurrencyIdConvert,
 >;
 
+
+parameter_types! {
+	// One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
+	pub const BaseXcmWeight: Weight = 100_000_000;
+	pub const MaxInstructions: u32 = 100;
+}
+
+
+
 pub struct XcmConfig;
+
+
 
 impl xcm_executor::Config for XcmConfig {
 	type Call = Call;
@@ -151,7 +193,7 @@ impl xcm_executor::Config for XcmConfig {
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
-	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
+	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
 	type Trader = ();
 	type ResponseHandler = (); // Don't handle responses for now.
 	type SubscriptionService = PolkadotXcm;
@@ -160,15 +202,9 @@ impl xcm_executor::Config for XcmConfig {
 }
 
 parameter_types! {
-	pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::get().into())));
+	pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::parachain_id().into())));
 }
 
-
-parameter_types! {
-	/// The amount of weight an XCM operation takes. This is a safe overestimate.
-	pub const BaseXcmWeight: Weight = 100_000_000;
-	pub const MaxInstructions: u32 = 100;
-}
 
 impl orml_xtokens::Config for Runtime {
 	type Event = Event;
@@ -218,4 +254,49 @@ impl sp_runtime::traits::Convert<AssetId, Option<MultiLocation>> for CurrencyIdC
 		// 	}
 		// }
 	}
+}
+
+// For test purposes.
+match_type! {
+	pub type SpecParachain: impl Contains<MultiLocation> = {
+		MultiLocation { parents: 1, interior: X1(Parachain(2000)) } |
+			MultiLocation { parents: 1, interior: X1(Parachain(2001)) }
+	};
+}
+
+impl pallet_xcm::Config for Runtime {
+	type Event = Event;
+	type SendXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
+	type XcmRouter = XcmRouter;
+	type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
+	/// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
+	type XcmExecuteFilter = Everything;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
+	type XcmTeleportFilter = Everything;
+	type XcmReserveTransferFilter = Everything;
+	type LocationInverter = LocationInverter<Ancestry>;
+	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
+	type Origin = Origin;
+	type Call = Call;
+
+	const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
+	type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
+}
+
+impl cumulus_pallet_xcm::Config for Runtime {
+	type Event = Event;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
+}
+
+impl cumulus_pallet_xcmp_queue::Config for Runtime {
+	type Event = Event;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
+	type VersionWrapper = ();
+	type ChannelInfo = ParachainSystem;
+}
+
+impl cumulus_pallet_dmp_queue::Config for Runtime {
+	type Event = Event;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
+	type ExecuteOverweightOrigin = system::EnsureRoot<AccountId>;
 }
