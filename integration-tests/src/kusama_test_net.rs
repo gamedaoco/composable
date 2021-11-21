@@ -23,8 +23,8 @@ impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandle
 		iter: I,
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
-		dbg!("asdasdadads");
-        todo!("fuck")
+		dbg!("LoggingMessageHandler");
+        todo!("LoggingMessageHandler")
     }
 }
 
@@ -33,8 +33,8 @@ impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler
 		iter: impl Iterator<Item = (BlockNumber, Vec<u8>)>,
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
-		dbg!("asdsadaadasdsad");
-        todo!("qwe")
+		dbg!("LoggingMessageHandler");
+        todo!("LoggingMessageHandler")
     }
 }
 

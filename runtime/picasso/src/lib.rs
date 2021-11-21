@@ -3,8 +3,8 @@
 #![recursion_limit = "256"]
 
 // Make the WASM binary available.
-#[cfg(feature = "std")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+// #[cfg(feature = "std")]
+// include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 mod xcmp;
 mod weights;
@@ -821,11 +821,18 @@ construct_runtime!(
 		CumulusXcm: cumulus_pallet_xcm::{Pallet, Call, Event<T>, Origin} = 42,
 		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 43,
 
+		XTokens: orml_xtokens::{Pallet, Storage, Call, Event<T>} = 44,
+		UnknownTokens: orml_unknown_tokens::{Pallet, Storage, Event} = 45,
+
 		Oracle: oracle::{Pallet, Call, Storage, Event<T>} = 50,
 		Tokens: orml_tokens::{Pallet, Call, Storage, Event<T>} = 51,
 		Factory: currency_factory::{Pallet, Storage, Event<T>} = 52,
 		Vault: vault::{Pallet, Call, Storage, Event<T>} = 53,
 		LiquidCrowdloan: crowdloan_bonus::{Pallet, Call, Storage, Event<T>} = 54,
+
+		Assets : assets::{Pallet, Call, Storage} = 55,
+		GovernanceRegistry : governance_registry::{Pallet, Call, Storage, Event<T>} = 56,
+		AssetsRegistry : assets_registry::{Pallet, Call, Storage, Event<T>} = 57,
 
 		CallFilter: call_filter::{Pallet, Call, Storage, Event<T>} = 100,
 	}
