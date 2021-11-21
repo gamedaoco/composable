@@ -173,6 +173,8 @@ runtime-benchmarks = [
 	"balances/runtime-benchmarks",
 	"timestamp/runtime-benchmarks",
 	"assets-registry/runtime-benchmarks",
+	#"assets/runtime-benchmarks",
+	#"governance-registry/runtime-benchmarks",
 	"oracle/runtime-benchmarks",
 	"collective/runtime-benchmarks",
 	"collator-selection/runtime-benchmarks",
