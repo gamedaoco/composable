@@ -728,28 +728,32 @@ impl assets_registry::Config for Runtime {
 
 #[cfg(feature = "develop")]
 impl governance_registry::Config for Runtime {
+    type Event = Event;
 
+    type AssetId = CurrencyId;
+
+    type WeightInfo = ();
 }
 
-//#[cfg(feature = "develop")]
+#[cfg(feature = "develop")]
 impl assets::Config for Runtime {
-    type AssetId;
+     type AssetId = CurrencyId;
 
-     type Balance;
+     type Balance = Balance;
 
-     type NativeAssetId;
+     type NativeAssetId = NativeAssetId;
 
-     type GenerateCurrencyId;
+     type GenerateCurrencyId = Factory;
 
-     type NativeCurrency;
+     type NativeCurrency = Balances;
 
-     type MultiCurrency;
+     type MultiCurrency = Tokens;
 
-     type GovernanceRegistry;
+     type GovernanceRegistry = GovernanceRegistry;
 
-     type WeightInfo;
+     type WeightInfo = ();
 
-     type AdminOrigin;
+     type AdminOrigin = EnsureRoot<AccountId>;
 }
 
 // type LocalAdminOrigin = assets_registry::EnsureLocalAdmin<Runtime>;
@@ -874,7 +878,7 @@ construct_runtime!(
 		Factory: currency_factory::{Pallet, Storage, Event<T>} = 52,
 		Vault: vault::{Pallet, Call, Storage, Event<T>} = 53,
 		LiquidCrowdloan: crowdloan_bonus::{Pallet, Call, Storage, Event<T>} = 54,
-		Assets : assets::{Pallet, Call, Storage, Event<T>} = 55,
+		Assets : assets::{Pallet, Call, Storage} = 55,
 		GovernanceRegistry : governance_registry::{Pallet, Call, Storage, Event<T>} = 56,
 		AssetsRegistry : assets_registry::{Pallet, Call, Storage, Event<T>} = 57,
 

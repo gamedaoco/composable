@@ -121,7 +121,7 @@ pub struct Todo;
 
 
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	,
+	Tokens,
 	UnknownTokens,
 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
 	AccountId,
@@ -136,7 +136,6 @@ parameter_types! {
 	pub const BaseXcmWeight: Weight = 100_000_000;
 	pub const MaxInstructions: u32 = 100;
 }
-
 
 pub struct TradePassthrough();
 
@@ -179,7 +178,6 @@ impl xcm_executor::Config for XcmConfig {
 parameter_types! {
 	pub SelfLocation: MultiLocation = MultiLocation::new(1, X1(Parachain(ParachainInfo::parachain_id().into())));
 }
-
 
 impl orml_xtokens::Config for Runtime {
 	type Event = Event;
