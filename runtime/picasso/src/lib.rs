@@ -726,6 +726,32 @@ impl assets_registry::Config for Runtime {
 	type ForeignAdminOrigin = assets_registry::EnsureForeignAdmin<Runtime>;
 }
 
+#[cfg(feature = "develop")]
+impl governance_registry::Config for Runtime {
+
+}
+
+//#[cfg(feature = "develop")]
+impl assets::Config for Runtime {
+    type AssetId;
+
+     type Balance;
+
+     type NativeAssetId;
+
+     type GenerateCurrencyId;
+
+     type NativeCurrency;
+
+     type MultiCurrency;
+
+     type GovernanceRegistry;
+
+     type WeightInfo;
+
+     type AdminOrigin;
+}
+
 // type LocalAdminOrigin = assets_registry::EnsureLocalAdmin<Runtime>;
 // 	type ForeignAdminOrigin = assets_registry::EnsureForeignAdmin<Runtime>;
 
@@ -843,13 +869,14 @@ construct_runtime!(
 		XTokens: orml_xtokens::{Pallet, Storage, Call, Event<T>} = 44,
 		UnknownTokens: orml_unknown_tokens::{Pallet, Storage, Event} = 45,
 
-
 		Oracle: oracle::{Pallet, Call, Storage, Event<T>} = 50,
 		Tokens: orml_tokens::{Pallet, Call, Storage, Event<T>} = 51,
 		Factory: currency_factory::{Pallet, Storage, Event<T>} = 52,
 		Vault: vault::{Pallet, Call, Storage, Event<T>} = 53,
 		LiquidCrowdloan: crowdloan_bonus::{Pallet, Call, Storage, Event<T>} = 54,
-		AssetsRegistry : assets_registry::{Pallet, Call, Storage, Event<T>} = 55,
+		Assets : assets::{Pallet, Call, Storage, Event<T>} = 55,
+		GovernanceRegistry : governance_registry::{Pallet, Call, Storage, Event<T>} = 56,
+		AssetsRegistry : assets_registry::{Pallet, Call, Storage, Event<T>} = 57,
 
 		CallFilter: call_filter::{Pallet, Call, Storage, Event<T>} = 100,
 	}

@@ -119,60 +119,9 @@ pub type XcmOriginToTransactDispatchOrigin = (
 
 pub struct Todo;
 
-// so if we have to use ORML stuff to simplify XCMP, need to impl on our trait, or need to implement(copy) custom stuff (akala/hydra uses ORML)
-impl orml_traits::MultiCurrency<AccountId> for Todo {
-    type CurrencyId = CurrencyId;
-
-    type Balance = <Runtime as balances::Config>::Balance;
-
-    fn minimum_balance(currency_id: Self::CurrencyId) -> Self::Balance {
-        todo!()
-    }
-
-    fn total_issuance(currency_id: Self::CurrencyId) -> Self::Balance {
-        todo!()
-    }
-
-    fn total_balance(currency_id: Self::CurrencyId, who: &AccountId) -> Self::Balance {
-        todo!()
-    }
-
-    fn free_balance(currency_id: Self::CurrencyId, who: &AccountId) -> Self::Balance {
-        todo!()
-    }
-
-    fn ensure_can_withdraw(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
-        todo!()
-    }
-
-    fn transfer(
-		currency_id: Self::CurrencyId,
-		from: &AccountId,
-		to: &AccountId,
-		amount: Self::Balance,
-	) -> sp_runtime::DispatchResult {
-        todo!()
-    }
-
-    fn deposit(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
-        Ok(())
-    }
-
-    fn withdraw(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> sp_runtime::DispatchResult {
-        Ok(())
-    }
-
-    fn can_slash(currency_id: Self::CurrencyId, who: &AccountId, value: Self::Balance) -> bool {
-        todo!()
-    }
-
-    fn slash(currency_id: Self::CurrencyId, who: &AccountId, amount: Self::Balance) -> Self::Balance {
-        todo!()
-    }
-}
 
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	Todo, //	Currencies,
+	,
 	UnknownTokens,
 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
 	AccountId,
