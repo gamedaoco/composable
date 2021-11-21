@@ -64,3 +64,29 @@ impl From<u128> for CurrencyId {
 		CurrencyId(raw)
 	}
 }
+
+/// maps id to junction generic key,
+/// unfortunately it is the best way to encode currency id as of now in XCM
+impl From<CurrencyId> for xcm::latest::Junction {
+	fn from(this:CurrencyId) -> Self{
+		xcm::latest::Junction::GeneralKey(this.encode())
+	}
+}
+
+
+// #[cfg(test)]
+// mod tests {
+
+// 	use codec::*;
+//     use crate::currency::CurrencyId;
+
+// 	#[test]
+// 	fn decode() {
+// 		let id = vec![1u8,0,0,0,   0,0,0,0,  0,0,0,0,  0,0,0,0];
+// 		let id = CurrencyId::decode(&mut &id[..]).unwrap();
+// 		assert_eq!(id, CurrencyId::PICA);
+// 		let id = vec![2u8,0,0,0,   0,0,0,0,  0,0,0,0,  0,0,0,0];
+// 		let id = CurrencyId::decode(&mut &id[..]).unwrap();
+// 		assert_eq!(id, CurrencyId::LAYR);
+// 	}
+// }

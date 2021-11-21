@@ -8889,6 +8889,7 @@ dependencies = [
  "scale-info",
  "serde",
  "sp-runtime",
+ "xcm",
 ]
 
 [[package]]

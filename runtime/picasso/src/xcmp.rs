@@ -4,7 +4,7 @@
 use super::{*}; // recursive dependency onto runtime
 
 use codec::{Decode, Encode};
-use composable_traits::assets::RemoteAssetRegistry;
+use composable_traits::assets::{RemoteAssetRegistry, XcmAssetLocation};
 use cumulus_primitives_core::ParaId;
 use support::{
 	construct_runtime, match_type, parameter_types,
@@ -55,17 +55,15 @@ impl ShouldExecute for Todo {
 	}
 }
 
-pub type Barrier = (Todo);
-
-// pub type Barrier = (
-// 	TakeWeightCredit,
-// 	AllowTopLevelPaidExecutionFrom<Everything>,
-// 	AllowUnpaidExecutionFrom<SpecParachain>,
-// 	// Expected responses are OK.
-// 	AllowKnownQueryResponses<PolkadotXcm>,
-// 	// Subscriptions for version tracking are OK.
-// 	AllowSubscriptionsFrom<Everything>,
-// );
+pub type Barrier = (
+	TakeWeightCredit,
+	AllowTopLevelPaidExecutionFrom<Everything>,
+	AllowUnpaidExecutionFrom<SpecParachain>,
+	// Expected responses are OK.
+	AllowKnownQueryResponses<PolkadotXcm>,
+	// Subscriptions for version tracking are OK.
+	AllowSubscriptionsFrom<Everything>,
+);
 
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -212,9 +210,9 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 
 pub struct CurrencyIdConvert;
 
-
 impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<MultiLocation> {
+		dbg!("mapping {:?} on {:?}", id, ParachainInfo::parachain_id());
 		<AssetsRegistry as RemoteAssetRegistry>::asset_to_location(id).map(Into::into)
 	}
 }
@@ -223,6 +221,7 @@ impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for Currency
 /// expected that currency in location is in format well known for local chain
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(location: MultiLocation) -> Option<CurrencyId> {
+		dbg!("interpertign {:?} on {:?}", &location, ParachainInfo::parachain_id());
 		match location {
 			MultiLocation {
 				parents,
@@ -235,21 +234,23 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 					None
 				}
 			}
-			_ => todo!("convert remote location into local"),
+			_ => <AssetsRegistry as RemoteAssetRegistry>::location_to_asset(XcmAssetLocation(location)).map(Into::into)
 		}
 	}
 }
 
 
-// covert remote to local
+/// covert remote to local, usually when receiving transfer
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(asset: MultiAsset) -> Option<CurrencyId> {
+		dbg!("{:?}", &asset);
 		if let MultiAsset {
 			id: Concrete(location), ..
 		} = asset
 		{
 			Self::convert(location)
 		} else {
+			dbg!("FAILED TO FIND REMOTE ASSET");
 			None
 		}
 	}
