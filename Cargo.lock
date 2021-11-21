@@ -5918,6 +5918,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "orml-unknown-tokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=ee37b76a7a8cf159e6c41851942758746318bb84#ee37b76a7a8cf159e6c41851942758746318bb84"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "orml-xcm-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
 name = "orml-utilities"
 version = "0.4.1-dev"
 source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=ee37b76a7a8cf159e6c41851942758746318bb84#ee37b76a7a8cf159e6c41851942758746318bb84"
@@ -5929,6 +5944,40 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "orml-xcm-support"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=ee37b76a7a8cf159e6c41851942758746318bb84#ee37b76a7a8cf159e6c41851942758746318bb84"
+dependencies = [
+ "frame-support",
+ "orml-traits",
+ "parity-scale-codec",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
+]
+
+[[package]]
+name = "orml-xtokens"
+version = "0.4.1-dev"
+source = "git+https://github.com/open-web3-stack/open-runtime-module-library?rev=ee37b76a7a8cf159e6c41851942758746318bb84#ee37b76a7a8cf159e6c41851942758746318bb84"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "orml-traits",
+ "orml-xcm-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
 ]
 
 [[package]]
@@ -6291,7 +6340,6 @@ dependencies = [
 name = "pallet-crowdloan-rewards"
 version = "0.0.1"
 dependencies = [
- "composable-traits",
  "frame-support",
  "frame-system",
  "hex",
@@ -7040,24 +7088,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-vault-group"
-version = "0.1.0"
-dependencies = [
- "composable-traits",
- "frame-support",
- "frame-system",
- "pallet-balances",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "smallvec 1.7.0",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
 name = "pallet-vesting"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.12#d76f39995315ec36980908e4b99709bd14927044"
@@ -7490,6 +7520,9 @@ dependencies = [
  "hex-literal",
  "orml-tokens",
  "orml-traits",
+ "orml-unknown-tokens",
+ "orml-xcm-support",
+ "orml-xtokens",
  "pallet-assets-registry",
  "pallet-aura",
  "pallet-authorship",
@@ -12929,8 +12962,8 @@ version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f559b464de2e2bdabcac6a210d12e9b5a5973c251e102c44c585c71d51bd78e"
 dependencies = [
- "cfg-if 1.0.0",
- "rand 0.8.4",
+ "cfg-if 0.1.10",
+ "rand 0.6.5",
  "static_assertions",
 ]
 

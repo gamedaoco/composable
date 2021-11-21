@@ -154,13 +154,10 @@ std = [
 	"aura/std",
 	"sp-consensus-aura/std",
     "scale-info/std",
-<<<<<<< HEAD
 	"orml-xtokens/std",
     "orml-xcm-support/std",
     "orml-unknown-tokens/std",
-=======
 	"assets-registry/std",
->>>>>>> dz/assets-mints
 ]
 runtime-benchmarks = [
 	"benchmarking",
