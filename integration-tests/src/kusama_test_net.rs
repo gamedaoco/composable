@@ -38,6 +38,7 @@ impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler
     }
 }
 
+// picasso_runtime::XcmpQueue
 decl_test_parachain! {
 	pub struct Picasso {
 		Runtime = picasso_runtime::Runtime,

@@ -85,36 +85,36 @@ pub type XcmRouter = (
 );
 
 
-pub struct LocationToAccountId;
+//pub struct LocationToAccountId;
 
-impl xcm_executor::traits::Convert<xcm::v1::MultiLocation, sp_runtime::AccountId32> for LocationToAccountId {
-    fn convert(value: xcm::v1::MultiLocation) -> Result<sp_runtime::AccountId32, xcm::v1::MultiLocation> {
-		todo!("0")
-	}
+// impl xcm_executor::traits::Convert<xcm::v1::MultiLocation, sp_runtime::AccountId32> for LocationToAccountId {
+//     fn convert(value: xcm::v1::MultiLocation) -> Result<sp_runtime::AccountId32, xcm::v1::MultiLocation> {
+// 		todo!("0")
+// 	}
 
-    fn convert_ref(value: impl std::borrow::Borrow<xcm::v1::MultiLocation>) -> Result<sp_runtime::AccountId32, ()> {
-		todo!("1")
-	}
+//     fn convert_ref(value: impl std::borrow::Borrow<xcm::v1::MultiLocation>) -> Result<sp_runtime::AccountId32, ()> {
+// 		todo!("1")
+// 	}
 
-    fn reverse(value: sp_runtime::AccountId32) -> Result<xcm::v1::MultiLocation, sp_runtime::AccountId32> {
-		todo!("2")
-	}
+//     fn reverse(value: sp_runtime::AccountId32) -> Result<xcm::v1::MultiLocation, sp_runtime::AccountId32> {
+// 		todo!("2")
+// 	}
 
-    fn reverse_ref(value: impl std::borrow::Borrow<sp_runtime::AccountId32>) -> Result<xcm::v1::MultiLocation, ()> {
-		todo!("3")
-	}
-}
+//     fn reverse_ref(value: impl std::borrow::Borrow<sp_runtime::AccountId32>) -> Result<xcm::v1::MultiLocation, ()> {
+// 		todo!("3")
+// 	}
+// }
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
 /// when determining ownership of accounts for asset transacting and when attempting to use XCM
 /// `Transact` in order to determine the dispatch Origin.
-// pub type LocationToAccountId = (
-// 	// The parent (Relay-chain) origin converts to the default `AccountId`.
-// 	ParentIsDefault<AccountId>,
-// 	// Sibling parachain origins convert to AccountId via the `ParaId::into`.
-// 	SiblingParachainConvertsVia<Sibling, AccountId>,
-// 	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
-// 	AccountId32Aliases<RelayNetwork, AccountId>,
-// );
+pub type LocationToAccountId = (
+	// The parent (Relay-chain) origin converts to the default `AccountId`.
+	ParentIsDefault<AccountId>,
+	// Sibling parachain origins convert to AccountId via the `ParaId::into`.
+	SiblingParachainConvertsVia<Sibling, AccountId>,
+	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
+	AccountId32Aliases<RelayNetwork, AccountId>,
+);
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
 /// ready for dispatching a transaction with Xcm's `Transact`. There is an `OriginKind` which can
@@ -143,15 +143,45 @@ pub type XcmOriginToTransactDispatchOrigin = (
 pub struct Todo;
 
 
-pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	Tokens,
-	UnknownTokens,
-	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
-	AccountId,
-	LocationToAccountId,
-	CurrencyId,
-	CurrencyIdConvert,
->;
+pub struct LocalAssetTransactor;
+impl<
+
+	> xcm_executor::traits::TransactAsset
+	for LocalAssetTransactor
+{
+	// fn deposit_asset(asset: &MultiAsset, location: &MultiLocation) -> Result {
+	// 	Ok(())
+	// }
+
+	fn withdraw_asset(asset: &MultiAsset, location: &MultiLocation) -> sp_std::result::Result<Assets, XcmError> {
+		// UnknownAsset::withdraw(asset, location).or_else(|_| {
+		// 	let who = AccountIdConvert::convert_ref(location)
+		// 		.map_err(|_| XcmError::from(Error::AccountIdConversionFailed))?;
+		// 	let currency_id = CurrencyIdConvert::convert(asset.clone())
+		// 		.ok_or_else(|| XcmError::from(Error::CurrencyIdConversionFailed))?;
+		// 	let amount: MultiCurrency::Balance = Match::matches_fungible(asset)
+		// 		.ok_or_else(|| XcmError::from(Error::FailedToMatchFungible))?
+		// 		.saturated_into();
+		// 	MultiCurrency::withdraw(currency_id, &who, amount).map_err(|e| XcmError::FailedToTransactAsset(e.into()))
+		// })?;
+
+		dbg!("{:?}", location);
+		Ok(asset.clone().into())
+
+
+
+	}
+}
+
+// pub type LocalAssetTransactor = MultiCurrencyAdapter<
+// 	Tokens,
+// 	UnknownTokens,
+// 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
+// 	AccountId,
+// 	LocationToAccountId,
+// 	CurrencyId,
+// 	CurrencyIdConvert,
+// >;
 
 
 parameter_types! {

@@ -1,0 +1,11 @@
+@startuml
+
+
+participant "orml::XToken Picasso" as xtoken_picasso
+
+participant "xcm_executor::traits::TransactAsset Picasso" as transact_asset_picasso
+
+xtoken_picasso -> xcm_execute: execute
+xcm_execute -> transact_asset_picasso : withdraw_asset
+
+@enduml
