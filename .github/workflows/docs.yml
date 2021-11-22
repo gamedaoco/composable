@@ -28,4 +28,4 @@ jobs:
     - name: Build and Push Artifacts to gcloud
       run: |
         /home/runner/.cargo/bin/cargo doc
-        gsutil cp target/doc gs://docs-rs-picasso.composable.finance/
+        gsutil -m cp -r target/doc/ gs://docs-rs-picasso.composable.finance/
