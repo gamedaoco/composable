@@ -1,0 +1,31 @@
+name: Build and Deploy to EKS
+
+on: 
+  push: 
+    branches: 
+      - docs-pipeline
+
+jobs: 
+  build: 
+    name: Build and Deploy
+    runs-on: 
+      - self-hosted
+      - linux
+      - x64
+      - sre
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Build and Push Artifacts to gcloud
+      run: |
+        /home/runner/.cargo/bin/cargo doc
+        gsutil cp target/doc gs://docs-rs-picasso.composable.finance/
