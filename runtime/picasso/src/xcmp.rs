@@ -54,19 +54,20 @@ impl ShouldExecute for Todo {
 		max_weight: Weight,
 		weight_credit: &mut Weight,
 	) -> Result<(), ()> {
+		dbg!("should execute {:?} {:?}", weight_credit, max_weight);
 		Ok(())
 	}
 }
 
-pub type Barrier = (
-	TakeWeightCredit,
-	AllowTopLevelPaidExecutionFrom<Everything>,
-	AllowUnpaidExecutionFrom<SpecParachain>,
-	// Expected responses are OK.
-	AllowKnownQueryResponses<PolkadotXcm>,
-	// Subscriptions for version tracking are OK.
-	AllowSubscriptionsFrom<Everything>,
-);
+// pub type Barrier = (
+// 	TakeWeightCredit,
+// 	AllowTopLevelPaidExecutionFrom<Everything>,
+// 	AllowUnpaidExecutionFrom<SpecParachain>,
+// 	// Expected responses are OK.
+// 	AllowKnownQueryResponses<PolkadotXcm>,
+// 	// Subscriptions for version tracking are OK.
+// 	AllowSubscriptionsFrom<Everything>,
+// );
 
 
 /// No local origins on this chain are allowed to dispatch XCM sends/executions.
@@ -83,17 +84,37 @@ pub type XcmRouter = (
 	XcmpQueue,
 );
 
+
+pub struct LocationToAccountId;
+
+impl xcm_executor::traits::Convert<xcm::v1::MultiLocation, sp_runtime::AccountId32> for LocationToAccountId {
+    fn convert(value: xcm::v1::MultiLocation) -> Result<sp_runtime::AccountId32, xcm::v1::MultiLocation> {
+		todo!("0")
+	}
+
+    fn convert_ref(value: impl std::borrow::Borrow<xcm::v1::MultiLocation>) -> Result<sp_runtime::AccountId32, ()> {
+		todo!("1")
+	}
+
+    fn reverse(value: sp_runtime::AccountId32) -> Result<xcm::v1::MultiLocation, sp_runtime::AccountId32> {
+		todo!("2")
+	}
+
+    fn reverse_ref(value: impl std::borrow::Borrow<sp_runtime::AccountId32>) -> Result<xcm::v1::MultiLocation, ()> {
+		todo!("3")
+	}
+}
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
 /// when determining ownership of accounts for asset transacting and when attempting to use XCM
 /// `Transact` in order to determine the dispatch Origin.
-pub type LocationToAccountId = (
-	// The parent (Relay-chain) origin converts to the default `AccountId`.
-	ParentIsDefault<AccountId>,
-	// Sibling parachain origins convert to AccountId via the `ParaId::into`.
-	SiblingParachainConvertsVia<Sibling, AccountId>,
-	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
-	AccountId32Aliases<RelayNetwork, AccountId>,
-);
+// pub type LocationToAccountId = (
+// 	// The parent (Relay-chain) origin converts to the default `AccountId`.
+// 	ParentIsDefault<AccountId>,
+// 	// Sibling parachain origins convert to AccountId via the `ParaId::into`.
+// 	SiblingParachainConvertsVia<Sibling, AccountId>,
+// 	// Straight up local `AccountId32` origins just alias directly to `AccountId`.
+// 	AccountId32Aliases<RelayNetwork, AccountId>,
+// );
 
 /// This is the type we use to convert an (incoming) XCM origin into a local `Origin` instance,
 /// ready for dispatching a transaction with Xcm's `Transact`. There is an `OriginKind` which can
@@ -134,10 +155,15 @@ pub type LocalAssetTransactor = MultiCurrencyAdapter<
 
 
 parameter_types! {
-	// One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
-	pub const BaseXcmWeight: Weight = 100_000_000;
-	pub const MaxInstructions: u32 = 100;
+	pub const BaseXcmWeight: Weight = 0;
+	pub const MaxInstructions: u32 = 10_000;
 }
+
+// parameter_types! {
+// 	// One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
+// 	pub const BaseXcmWeight: Weight = 100_000_000;
+// 	pub const MaxInstructions: u32 = 100;
+// }
 
 pub struct TradePassthrough();
 
@@ -165,7 +191,7 @@ impl xcm_executor::Config for XcmConfig {
 	type IsReserve = NativeAsset;
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
 	type LocationInverter = LocationInverter<Ancestry>;
-	type Barrier = Barrier;
+	type Barrier = Todo;//Barrier;
 	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
 	//type Trader = ();
 	type Trader = TradePassthrough;
@@ -224,7 +250,8 @@ impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for Currency
 /// expected that currency in location is in format well known for local chain
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(location: MultiLocation) -> Option<CurrencyId> {
-		dbg!("interpertign {:?} on {:?}", &location, ParachainInfo::parachain_id());
+
+		dbg!("CurrencyIdConvert.convert {:?} on {:?}", &location, ParachainInfo::parachain_id());
 		match location {
 			MultiLocation {
 				parents,
@@ -237,7 +264,12 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 					None
 				}
 			}
-			_ => <AssetsRegistry as RemoteAssetRegistry>::location_to_asset(XcmAssetLocation(location)).map(Into::into)
+			_ => {
+
+				let x= <AssetsRegistry as RemoteAssetRegistry>::location_to_asset(XcmAssetLocation(location)).map(Into::into);
+				//todo!("11111111111111111");
+				Some(x.unwrap())
+			}
 		}
 	}
 }

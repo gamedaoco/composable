@@ -41,10 +41,10 @@ fn transfer_from_relay_chain() {
 #[test]
 fn transfer_to_relay_chain() {
     Picasso::execute_with(|| {
-		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::PICA,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
-		));
+		// assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+		// 	CurrencyId::PICA,
+		// 	composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
+		// ));
             let transferred = picasso_runtime::XTokens::transfer(
                 picasso_runtime::Origin::signed(ALICE.into()),
                 CurrencyId::PICA,
@@ -74,6 +74,48 @@ fn transfer_to_relay_chain() {
 			2999893333340 // 3 * PICA - fee
 		);
 	});
+}
+
+
+#[test]
+fn transfer_from_picasso_to_dali() {
+	Picasso::execute_with(|| {
+		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+			CurrencyId::PICA,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), CurrencyId::PICA.into())))
+		));
+
+		assert_ok!(picasso_runtime::XTokens::transfer(
+			picasso_runtime::Origin::signed(ALICE.into()),
+			CurrencyId::PICA,
+			3 * PICA,
+			Box::new(
+				MultiLocation::new(
+					1,
+					X2(
+						Junction::Parachain(DALI_PARA_ID),
+						Junction::AccountId32 {
+							id: BOB,
+							network: NetworkId::Any,
+						}
+					)
+				)
+				.into()
+			),
+			399_600_000_000
+		));
+		assert_eq!(
+			picasso_runtime::Balances::free_balance(&AccountId::from(ALICE)),
+			200 * PICA - 3 * PICA
+		);
+	});
+
+	// Picasso::execute_with(|| {
+	// 	assert_eq!(
+	// 		picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB)),
+	// 		3 * PICA
+	// 	);
+	// });
 }
 
 #[test]
