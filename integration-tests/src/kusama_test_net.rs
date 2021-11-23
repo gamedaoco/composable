@@ -12,8 +12,8 @@ type Balances = u128;
 pub const ALICE: [u8; 32] = [4u8; 32];
 pub const BOB: [u8; 32] = [5u8; 32];
 pub const PICA: Balances = 1_000_000_000_000;
-pub const PICASSO_PARA_ID: u32 = 2000;
-pub const DALI_PARA_ID: u32 = 2001;
+pub const PICASSO_PARA_ID: u32 = 1;
+pub const DALI_PARA_ID: u32 = 2;
 
 // null handler for now, so need to find existing impl (or copy paste from simulator example)
 //type SilentMessageHandler = ();
@@ -25,7 +25,8 @@ impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandle
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
 		dbg!("LoggingMessageHandler");
-        todo!("LoggingMessageHandler")
+        //todo!("LoggingMessageHandler")
+		0
     }
 }
 
@@ -35,11 +36,12 @@ impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
 		dbg!("LoggingMessageHandler");
-        todo!("LoggingMessageHandler")
+        //todo!("LoggingMessageHandler")
+		0
     }
 }
 
-// picasso_runtime::XcmpQueue
+// picasso_runtime::XcmpQueue, XcmpQueue seems like handler, but it does not for some reason types here
 decl_test_parachain! {
 	pub struct Picasso {
 		Runtime = picasso_runtime::Runtime,
@@ -159,7 +161,7 @@ pub fn picasso_ext(para_id: u32) -> sp_io::TestExternalities {
 	)
 	.unwrap();
 	orml_tokens::GenesisConfig::<Runtime> {
-		balances: vec![(AccountId::from(ALICE), CurrencyId::PICA, 200 * 1_000_000_000_000)],
+		balances: vec![(AccountId::from(ALICE), CurrencyId::INVALID, 200 * 1_000_000_000_000)],
 	}
 	.assimilate_storage(&mut storage)
 	.unwrap();

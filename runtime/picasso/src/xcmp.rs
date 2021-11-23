@@ -3,6 +3,7 @@
 //! Setup of XCMP for parachain.
 //! See links which help to understand how it works:
 //! - [Polkadot XCM Cross-Chain Asset Transfer Demo](https://medium.com/oak-blockchain/polkadot-xcm-cross-chain-asset-transfer-demo-53aa9a2e97a7)
+//! - https://medium.com/polkadot-network/xcm-part-ii-versioning-and-compatibility-b313fc257b83
 
 use super::{*}; // recursive dependency onto runtime
 
