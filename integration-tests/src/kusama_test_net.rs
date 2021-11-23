@@ -6,6 +6,7 @@ use primitives::currency::CurrencyId;
 use sp_runtime::traits::AccountIdConversion;
 use support::traits::GenesisBuild;
 use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
+//use crate::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
 
 type Balances = u128;
 pub const ALICE: [u8; 32] = [4u8; 32];

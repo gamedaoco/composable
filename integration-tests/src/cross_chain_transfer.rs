@@ -9,6 +9,7 @@ use xcm::latest::prelude::*;
 use cumulus_primitives_core::ParaId;
 use orml_traits::currency::MultiCurrency;
 use sp_runtime::traits::AccountIdConversion;
+//use crate::xcm_simulator::TestExt;
 use xcm_simulator::TestExt;
 use picasso_runtime as dali_runtime;
 
@@ -38,8 +39,12 @@ fn transfer_from_relay_chain() {
     });
 }
 
+	// /// Destination is routable, but there is some issue with the transport mechanism.
+	// #[codec(index = 14)]
+	// Transport(#[codec(skip)] &'static str),
 #[test]
 fn transfer_to_relay_chain() {
+
     Picasso::execute_with(|| {
 		// assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
 		// 	CurrencyId::PICA,
@@ -79,6 +84,7 @@ fn transfer_to_relay_chain() {
 
 #[test]
 fn transfer_from_picasso_to_dali() {
+	support::log::error!("asddas");
 	Picasso::execute_with(|| {
 		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
 			CurrencyId::PICA,
