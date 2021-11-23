@@ -5,3 +5,6 @@ mod kusama_test_net;
 
 #[cfg(test)]
 mod cross_chain_transfer;
+
+#[cfg(test)]
+mod xcm_tests;
