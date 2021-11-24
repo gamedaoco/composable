@@ -25,7 +25,7 @@ impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandle
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
 		dbg!("LoggingMessageHandler");
-        //todo!("LoggingMessageHandler")
+        todo!("LoggingMessageHandler");
 		0
     }
 }
@@ -36,7 +36,7 @@ impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler
 		max_weight: picasso_runtime::Weight,
 	) -> picasso_runtime::Weight {
 		dbg!("LoggingMessageHandler");
-        //todo!("LoggingMessageHandler")
+        todo!("LoggingMessageHandler");
 		0
     }
 }

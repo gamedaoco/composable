@@ -52,6 +52,13 @@ use xcm_builder::{AccountId32Aliases, AllowKnownQueryResponses, AllowSubscriptio
 //pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
 
 
+parameter_types! {
+	// pub const RelayLocation: MultiLocation = MultiLocation::X1(Junction::Parent);
+	pub const RelayNetwork: NetworkId = NetworkId::Kusama;
+	pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
+	pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
+}
+
 impl ShouldExecute for Todo {
 	fn should_execute<Call>(
 		_origin: &MultiLocation,
@@ -69,7 +76,7 @@ impl ShouldExecute for Todo {
 // 	AllowTopLevelPaidExecutionFrom<Everything>,
 // 	AllowUnpaidExecutionFrom<SpecParachain>,
 // 	// Expected responses are OK.
-// 	AllowKnownQueryResponses<PolkadotXcm>,
+// 	AllowKnownQueryResponses<RelayerXcm>,
 // 	// Subscriptions for version tracking are OK.
 // 	AllowSubscriptionsFrom<Everything>,
 // );
@@ -231,10 +238,10 @@ impl xcm_executor::Config for XcmConfig {
 	//type Trader = ();
 	type Trader = TradePassthrough;
 	//type ResponseHandler = (); // Don't handle responses for now.
-	type ResponseHandler = PolkadotXcm; // Don't handle responses for now.
-	type SubscriptionService = PolkadotXcm;
-	type AssetClaims = PolkadotXcm;
-	type AssetTrap = PolkadotXcm;
+	type ResponseHandler = RelayerXcm;
+	type SubscriptionService = RelayerXcm;
+	type AssetClaims = RelayerXcm;
+	type AssetTrap = RelayerXcm;
 }
 
 
