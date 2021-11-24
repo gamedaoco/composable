@@ -30,3 +30,38 @@ fn throw_exception() {
         assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
     });
 }
+
+#[test]
+fn teleport_all() {
+    env_logger::init();
+    Picasso::execute_with(|| {
+        let here = MultiLocation::new(0, Here);
+
+        let xcm = Xcm(vec![InitiateTeleport {
+            assets: All.into(),
+            dest: Parent.into(),
+            xcm: Xcm(vec![
+                BuyExecution {
+                    fees: (Parent, 10000000).into(),
+                    weight_limit: Unlimited,
+                },
+                DepositReserveAsset {
+                    assets: All.into(),
+                    max_assets : 1,
+                    dest: MultiLocation::new(1, X2(Parachain(DALI_PARA_ID))),
+                    xcm: Xcm(vec![]),
+                }
+            ]),
+        }]);
+        // let xcm = Xcm(vec![
+        //     //QueryHolding
+
+        //     //Trap(42)],
+
+        // );
+
+        let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm, 42, 42);
+
+        assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
+    });
+}
