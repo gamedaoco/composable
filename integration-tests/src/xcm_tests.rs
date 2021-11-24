@@ -1,6 +1,5 @@
 //! basic XCM `code katas`, example
 
-
 use crate::kusama_test_net::*;
 use common::AccountId;
 use composable_traits::assets::RemoteAssetRegistry;

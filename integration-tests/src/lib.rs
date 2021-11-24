@@ -8,3 +8,7 @@ mod cross_chain_transfer;
 
 #[cfg(test)]
 mod xcm_tests;
+
+
+#[cfg(test)]
+mod runtime_tests;
