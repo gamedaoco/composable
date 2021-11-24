@@ -126,6 +126,7 @@ fn transfer_from_picasso_to_dali() {
 
 #[test]
 fn transfer_from_dali() {
+	env_logger::init();
 	Picasso::execute_with(|| {
 		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
 			CurrencyId::INVALID,

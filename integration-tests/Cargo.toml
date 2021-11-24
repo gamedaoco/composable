@@ -104,6 +104,9 @@ polkadot-primitives = { git = "https://github.com/paritytech/polkadot", branch =
 polkadot-runtime-parachains = { git = "https://github.com/paritytech/polkadot", branch = "release-v0.9.12" }
 picasso-runtime = { path = "../runtime/picasso", default-features = false, features = ["develop"]}
 
+[dev-dependencies]
+env_logger = "0.9.0"
+
 [features]
 default = ["std"]
 std = [
