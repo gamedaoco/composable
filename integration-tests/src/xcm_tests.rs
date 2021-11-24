@@ -25,9 +25,12 @@ fn throw_exception() {
         let here = MultiLocation::new(0, Here);
         let xcm = Xcm(vec![Trap(42)]);
 
-        let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm, 42, 42);
+        let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm, 1000000000, 1000000000);
 
-        assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
+        match executed {
+            Outcome::Incomplete(_, error) => assert_eq!(XcmError::Trap(42), error),
+            _ => unreachable!(),
+        }
     });
 }
 
@@ -41,27 +44,20 @@ fn teleport_all() {
             assets: All.into(),
             dest: Parent.into(),
             xcm: Xcm(vec![
-                BuyExecution {
-                    fees: (Parent, 10000000).into(),
-                    weight_limit: Unlimited,
-                },
-                DepositReserveAsset {
-                    assets: All.into(),
-                    max_assets : 1,
-                    dest: MultiLocation::new(1, X2(Parachain(DALI_PARA_ID))),
-                    xcm: Xcm(vec![]),
-                }
+                // BuyExecution {
+                //     fees: (Parent, 10000000).into(),
+                //     weight_limit: WeightLimit::Limited(100000000),
+                // },
+                // Trap(13),
             ]),
         }]);
-        // let xcm = Xcm(vec![
-        //     //QueryHolding
+        let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm,
+            1000000000, 1000000000);
 
-        //     //Trap(42)],
 
-        // );
+        //assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
+        dbg!("{:?}", executed);
+        assert!(matches!(Outcome::Complete(42), executed));
 
-        let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm, 42, 42);
-
-        assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
     });
 }

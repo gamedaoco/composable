@@ -7,6 +7,7 @@
 //! - https://medium.com/oak-blockchain/tutorial-polkadot-cross-chain-message-passing-xcmp-demo-with-ping-pallet-
 //! Format of messages:
 //! - https://medium.com/polkadot-network/xcm-part-ii-versioning-and-compatibility-b313fc257b83
+//! - https://medium.com/polkadot-network/xcm-part-iii-execution-and-error-management-ceb8155dd166
 
 use super::{*}; // recursive dependency onto runtime
 
