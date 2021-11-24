@@ -91,6 +91,35 @@ fn teleport_all() {
 			ParaId::from(id).into_account()
 		}
 
+
+		#[test]
+		fn xcmp_rempark() {
+			KusamaNetwork::reset();
+
+			let remark =
+			picasso_runtime::Call::System(frame_system::Call::<picasso_runtime::Runtime>::remark_with_event {
+					remark: vec![1, 2, 3],
+				});
+			Picasso::execute_with(|| {
+				assert_ok!(picasso_runtime::RelayerXcm::send_xcm(
+					Here,
+					(Parent, Parachain(DALI_PARA_ID)),
+					Xcm(vec![Transact {
+						origin_type: OriginKind::SovereignAccount,
+						require_weight_at_most: 40000 as u64,
+						call: remark.encode().into(),
+					}]),
+				));
+			});
+
+			Dali::execute_with(|| {
+				use dali_runtime::{Event, System};
+				assert!(System::events()
+					.iter()
+					.any(|r| matches!(r.event, Event::System(frame_system::Event::Remarked(_, _)))));
+			});
+		}
+
     /// Scenario:
 	/// A parachain wants to be notified that a transfer worked correctly.
 	/// It sends a `QueryHolding` after the deposit to get notified on success.
