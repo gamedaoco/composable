@@ -20,17 +20,25 @@ use crate::kusama_test_net::KusamaNetwork;
 
 //use serial_test::serial;
 
+///  there is no channel opened to relay by design
 //#[serial]
 #[test]
 fn channel_to_relay() {
     env_logger_init();
     KusamaNetwork::reset();
     Picasso::execute_with(|| {
-        let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(0));
-    });
-    Picasso::execute_with(|| {
-        let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(0));
+        let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(2090));
         assert!(matches!(status, ChannelStatus::Closed));
+    });
+}
+
+#[test]
+fn channel_to_self() {
+    env_logger_init();
+    KusamaNetwork::reset();
+    Picasso::execute_with(|| {
+        let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(PICASSO_PARA_ID));
+        assert!(matches!(status, ChannelStatus::Ready(_, _)));
     });
 }
 
@@ -41,11 +49,8 @@ fn channel_to_parachain() {
     KusamaNetwork::reset();
     Picasso::execute_with(|| {
         let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(DALI_PARA_ID));
-    });
-    Picasso::execute_with(|| {
-        let status = <picasso_runtime::ParachainSystem as GetChannelInfo>::get_channel_status(ParaId::new(DALI_PARA_ID));
 
         assert!(matches!(status, ChannelStatus
-            ::Closed));
+            ::Ready(_, _)));
     });
 }

@@ -15,7 +15,13 @@ use picasso_runtime as dali_runtime;
 
 #[test]
 fn transfer_from_relay_chain() {
-    // here we should add asset to registry
+	env_logger_init();
+    Picasso::execute_with(|| {
+		assert_ok!(picasso_runtime::AssetsRegistry::set_location(
+			CurrencyId::INVALID,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::parent())
+		));
+	});
     KusamaRelay::execute_with(|| {
         let transfered = kusama_runtime::XcmPallet::reserve_transfer_assets(
             kusama_runtime::Origin::signed(ALICE.into()),
@@ -30,26 +36,27 @@ fn transfer_from_relay_chain() {
             0,
         );
         assert_ok!(transfered);
+		assert_eq!(
+			kusama_runtime::Balances::free_balance(&ParaId::from(PICASSO_PARA_ID).into_account()),
+			13 * PICA
+		);
     });
 
     Picasso::execute_with(|| {
-
         let balance = picasso_runtime::Tokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB));
         assert_eq!(balance, 3 * PICA);
     });
 }
 
-	// /// Destination is routable, but there is some issue with the transport mechanism.
-	// #[codec(index = 14)]
-	// Transport(#[codec(skip)] &'static str),
+
 #[test]
 fn transfer_to_relay_chain() {
-
+	env_logger_init();
     Picasso::execute_with(|| {
-		// assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-		// 	CurrencyId::INVALID,
-		// 	composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
-		// ));
+		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+			CurrencyId::INVALID,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
+		));
             let transferred = picasso_runtime::XTokens::transfer(
                 picasso_runtime::Origin::signed(ALICE.into()),
                 CurrencyId::INVALID,

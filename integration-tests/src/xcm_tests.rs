@@ -36,11 +36,10 @@ fn throw_exception() {
 }
 
 #[test]
-fn teleport_all() {
+fn initiate_reserver_withdraw_on_relay() {
     env_logger_init();
     Picasso::execute_with(|| {
         let here = MultiLocation::new(0, Here);
-
 
 
         // let xcm = Xcm(vec![InitiateTeleport {
@@ -55,13 +54,13 @@ fn teleport_all() {
         //     ]),
         // }]);
 
+
         let asset_id = MultiLocation::new(0, X2(Parachain(PICASSO_PARA_ID), GeneralKey(0u128.encode())));
         let asset_id = AssetId::Concrete(asset_id);
         let asset_id = MultiAsset{ fun : Fungible(42), id: asset_id};
         let xcm= Xcm(
             vec![
                 WithdrawAsset(asset_id.into()),
-
                     InitiateReserveWithdraw {
                         assets: All.into(),
                         reserve: Parent.into(),
@@ -72,10 +71,6 @@ fn teleport_all() {
 
         let executed = XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm,
             10000000000, 10000000000);
-
-
-        //assert!(matches!(Outcome::Error(xcm::latest::Error::Trap(42)), executed));
-        dbg!("{:?}", executed);
         assert!(matches!(Outcome::Complete(42), executed));
 
     });
@@ -126,10 +121,10 @@ fn teleport_all() {
 	/// Asserts that the balances are updated correctly and the expected XCM is sent.
 	#[test]
 	fn query_holding() {
-
 		KusamaNetwork::reset();
+		env_logger_init();
 
-		let send_amount = 12345;
+		let send_amount = 10;
 		let query_id_set = 1234;
 
 		// Send a message which fully succeeds on the relay chain
@@ -158,10 +153,10 @@ fn teleport_all() {
 			// Withdraw executed
 			assert_eq!(
 				kusama_runtime::Balances::free_balance(para_account_id(PICASSO_PARA_ID)),
-				12412411 - send_amount
+				PICASSO_RELAY_BALANCE - send_amount
 			);
 			// Deposit executed
-			//assert_eq!(relay_chain::Balances::free_balance(para_account_id(2)), send_amount);
+			assert_eq!(kusama_runtime::Balances::free_balance(para_account_id(DALI_PARA_ID)), send_amount);
 		});
 
 		// // Check that QueryResponse message was received
