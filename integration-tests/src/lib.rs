@@ -1,5 +1,17 @@
 
-//pub mod xcm_simulator;
+
+
+
+/// this must be singleton
+#[cfg(test)]
+pub fn env_logger_init() {
+    use std::sync::Once;
+    static LOG_INIT : Once = Once::new();
+    LOG_INIT.call_once(|| {
+        env_logger::init();
+    });
+}
+
 #[cfg(test)]
 mod kusama_test_net;
 

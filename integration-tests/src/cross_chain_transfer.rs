@@ -1,4 +1,4 @@
-use crate::kusama_test_net::*;
+use crate::{env_logger_init, kusama_test_net::*};
 use common::AccountId;
 use composable_traits::assets::RemoteAssetRegistry;
 use kusama_runtime::*;
@@ -10,7 +10,7 @@ use cumulus_primitives_core::ParaId;
 use orml_traits::currency::MultiCurrency;
 use sp_runtime::traits::AccountIdConversion;
 //use crate::xcm_simulator::TestExt;
-use xcm_simulator::TestExt;
+use xcm_emulator::TestExt;
 use picasso_runtime as dali_runtime;
 
 #[test]
@@ -84,16 +84,16 @@ fn transfer_to_relay_chain() {
 
 #[test]
 fn transfer_from_picasso_to_dali() {
-	support::log::error!("asddas");
+	env_logger_init();
 	Picasso::execute_with(|| {
 		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), CurrencyId::INVALID.into())))
+			CurrencyId::PICA,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), CurrencyId::PICA.into())))
 		));
 
 		assert_ok!(picasso_runtime::XTokens::transfer(
 			picasso_runtime::Origin::signed(ALICE.into()),
-			CurrencyId::INVALID,
+			CurrencyId::PICA,
 			3 * PICA,
 			Box::new(
 				MultiLocation::new(
@@ -118,7 +118,7 @@ fn transfer_from_picasso_to_dali() {
 
 	// Picasso::execute_with(|| {
 	// 	assert_eq!(
-	// 		picasso_runtime::Tokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB)),
+	// 		picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB)),
 	// 		3 * PICA
 	// 	);
 	// });
@@ -126,23 +126,9 @@ fn transfer_from_picasso_to_dali() {
 
 #[test]
 fn transfer_from_dali() {
-	env_logger::init();
-	Picasso::execute_with(|| {
-		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), CurrencyId::INVALID.into())))
-		));
-		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), CurrencyId::INVALID.into())))
-		));
-	});
+	env_logger_init();
 
 	Dali::execute_with(|| {
-		assert_ok!(<dali_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), CurrencyId::INVALID.into())))
-		));
 		assert_ok!(<dali_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
 			CurrencyId::INVALID,
 			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), CurrencyId::INVALID.into())))

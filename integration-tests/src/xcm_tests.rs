@@ -1,6 +1,6 @@
 //! basic XCM `code katas`, example
 
-use crate::kusama_test_net::*;
+use crate::{env_logger_init, kusama_test_net::*};
 use common::AccountId;
 use composable_traits::assets::RemoteAssetRegistry;
 use kusama_runtime::*;
@@ -13,7 +13,7 @@ use orml_traits::currency::MultiCurrency;
 use sp_runtime::traits::AccountIdConversion;
 use xcm_executor::XcmExecutor;
 //use crate::xcm_simulator::TestExt;
-use xcm_simulator::TestExt;
+use xcm_emulator::TestExt;
 use picasso_runtime as dali_runtime;
 use kusama_runtime::KusamaNetwork as KusamaNetworkId;
 use crate::kusama_test_net::KusamaNetwork;
@@ -37,7 +37,7 @@ fn throw_exception() {
 
 #[test]
 fn teleport_all() {
-    env_logger::init();
+    env_logger_init();
     Picasso::execute_with(|| {
         let here = MultiLocation::new(0, Here);
 
