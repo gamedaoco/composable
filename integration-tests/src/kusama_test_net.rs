@@ -5,12 +5,7 @@ use polkadot_runtime_parachains::configuration::HostConfiguration;
 use primitives::currency::CurrencyId;
 use sp_runtime::traits::AccountIdConversion;
 use support::traits::GenesisBuild;
-<<<<<<< HEAD
-use xcm_simulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
-//use crate::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
-=======
 use xcm_emulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain};
->>>>>>> dz/xmcp/emulator
 
 type Balances = u128;
 pub const ALICE: [u8; 32] = [4u8; 32];
@@ -19,45 +14,15 @@ pub const PICA: Balances = 1_000_000_000_000;
 pub const PICASSO_PARA_ID: u32 = 1;
 pub const DALI_PARA_ID: u32 = 2;
 
-<<<<<<< HEAD
-// null handler for now, so need to find existing impl (or copy paste from simulator example)
-//type SilentMessageHandler = ();
 
-struct LoggingMessageHandler;
-impl polkadot_parachain::primitives::XcmpMessageHandler for LoggingMessageHandler {
-    fn handle_xcmp_messages<'a, I: Iterator<Item = (ParaId, BlockNumber, &'a [u8])>>(
-		iter: I,
-		max_weight: picasso_runtime::Weight,
-	) -> picasso_runtime::Weight {
-		dbg!("LoggingMessageHandler");
-        todo!("LoggingMessageHandler");
-		0
-    }
-}
 
-impl polkadot_parachain::primitives::DmpMessageHandler for LoggingMessageHandler {
-    fn handle_dmp_messages(
-		iter: impl Iterator<Item = (BlockNumber, Vec<u8>)>,
-		max_weight: picasso_runtime::Weight,
-	) -> picasso_runtime::Weight {
-		dbg!("LoggingMessageHandler");
-        todo!("LoggingMessageHandler");
-		0
-    }
-}
 
 // picasso_runtime::XcmpQueue, XcmpQueue seems like handler, but it does not for some reason types here
 decl_test_parachain! {
 	pub struct Picasso {
 		Runtime = picasso_runtime::Runtime,
-		XcmpMessageHandler = LoggingMessageHandler,
-		DmpMessageHandler = LoggingMessageHandler,
-=======
-decl_test_parachain! {
-	pub struct Picasso {
-		Runtime = picasso_runtime::Runtime,
 		Origin = picasso_runtime::Origin,
->>>>>>> dz/xmcp/emulator
+
 		new_ext = picasso_ext(PICASSO_PARA_ID),
 	}
 }
@@ -67,12 +32,7 @@ decl_test_parachain! {
 decl_test_parachain! {
 	pub struct Dali {
 		Runtime = picasso_runtime::Runtime,
-<<<<<<< HEAD
-		XcmpMessageHandler = LoggingMessageHandler,
-		DmpMessageHandler = LoggingMessageHandler,
-=======
 		Origin = picasso_runtime::Origin,
->>>>>>> dz/xmcp/emulator
 		new_ext = picasso_ext(DALI_PARA_ID),
 	}
 }

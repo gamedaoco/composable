@@ -192,12 +192,9 @@ runtime-benchmarks = [
 ]
 develop = [
 	"assets-registry",
-<<<<<<< HEAD
 	"governance-registry",
 	"assets",
-=======
 	"oracle",
 	"vault",
 	"currency-factory",
->>>>>>> dz/xmcp/emulator
 ]
