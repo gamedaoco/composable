@@ -14,16 +14,11 @@ use super::{*}; // recursive dependency onto runtime
 use codec::{Decode, Encode};
 use composable_traits::assets::{RemoteAssetRegistry, XcmAssetLocation};
 use cumulus_primitives_core::ParaId;
-use support::{
-	construct_runtime, match_type, parameter_types,
-	traits::{Contains, Everything, KeyOwnerProofSystem, Nothing, Randomness, StorageInfo},
-	weights::{
+use support::{PalletId, StorageValue, construct_runtime, log, match_type, parameter_types, traits::{Contains, Everything, KeyOwnerProofSystem, Nothing, Randomness, StorageInfo}, weights::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
 		WeightToFeePolynomial,
-	},
-	PalletId, StorageValue,
-};
+	}};
 
 use orml_xcm_support::{IsNativeConcrete, MultiCurrencyAdapter, MultiNativeAsset};
 
@@ -66,7 +61,7 @@ impl ShouldExecute for Todo {
 		max_weight: Weight,
 		weight_credit: &mut Weight,
 	) -> Result<(), ()> {
-		dbg!("should execute {:?} {:?}", weight_credit, max_weight);
+		log::trace!("should execute {:?} {:?}", weight_credit, max_weight);
 		Ok(())
 	}
 }
@@ -96,26 +91,6 @@ pub type XcmRouter = (
 	XcmpQueue,
 );
 
-
-//pub struct LocationToAccountId;
-
-// impl xcm_executor::traits::Convert<xcm::v1::MultiLocation, sp_runtime::AccountId32> for LocationToAccountId {
-//     fn convert(value: xcm::v1::MultiLocation) -> Result<sp_runtime::AccountId32, xcm::v1::MultiLocation> {
-// 		todo!("0")
-// 	}
-
-//     fn convert_ref(value: impl std::borrow::Borrow<xcm::v1::MultiLocation>) -> Result<sp_runtime::AccountId32, ()> {
-// 		todo!("1")
-// 	}
-
-//     fn reverse(value: sp_runtime::AccountId32) -> Result<xcm::v1::MultiLocation, sp_runtime::AccountId32> {
-// 		todo!("2")
-// 	}
-
-//     fn reverse_ref(value: impl std::borrow::Borrow<sp_runtime::AccountId32>) -> Result<xcm::v1::MultiLocation, ()> {
-// 		todo!("3")
-// 	}
-// }
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
 /// when determining ownership of accounts for asset transacting and when attempting to use XCM
 /// `Transact` in order to determine the dispatch Origin.
@@ -177,7 +152,7 @@ impl<
 		// 	MultiCurrency::withdraw(currency_id, &who, amount).map_err(|e| XcmError::FailedToTransactAsset(e.into()))
 		// })?;
 
-		dbg!("{:?}", location);
+		log::trace!("{:?}", location);
 		Ok(asset.clone().into())
 
 
@@ -240,7 +215,7 @@ impl xcm_executor::Config for XcmConfig {
 	//type ResponseHandler = (); // Don't handle responses for now.
 	type ResponseHandler = RelayerXcm;
 	type SubscriptionService = RelayerXcm;
-	type AssetClaims = RelayerXcm;
+	type AssetClaims = RelayerXcm;s
 	type AssetTrap = RelayerXcm;
 }
 
@@ -283,7 +258,7 @@ pub struct CurrencyIdConvert;
 
 impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<MultiLocation> {
-		dbg!("mapping {:?} on {:?}", id, ParachainInfo::parachain_id());
+		log::trace!("mapping {:?} on {:?}", id, ParachainInfo::parachain_id());
 		<AssetsRegistry as RemoteAssetRegistry>::asset_to_location(id).map(Into::into)
 	}
 }
@@ -293,7 +268,7 @@ impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for Currency
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(location: MultiLocation) -> Option<CurrencyId> {
 
-		dbg!("CurrencyIdConvert.convert {:?} on {:?}", &location, ParachainInfo::parachain_id());
+		log::trace!("CurrencyIdConvert.convert {:?} on {:?}", &location, ParachainInfo::parachain_id());
 		match location {
 			MultiLocation {
 				parents,
@@ -320,14 +295,14 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 /// covert remote to local, usually when receiving transfer
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(asset: MultiAsset) -> Option<CurrencyId> {
-		dbg!("{:?}", &asset);
+		log::trace!("{:?}", &asset);
 		if let MultiAsset {
 			id: Concrete(location), ..
 		} = asset
 		{
 			Self::convert(location)
 		} else {
-			dbg!("FAILED TO FIND REMOTE ASSET");
+			log::trace!("FAILED TO FIND REMOTE ASSET");
 			None
 		}
 	}
