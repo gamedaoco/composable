@@ -44,7 +44,7 @@ use xcm_builder::{AccountId32Aliases, AllowKnownQueryResponses, AllowSubscriptio
 
 /// here we should allow only from hydradx/acala
 /// may be without credit
-//pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
+pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
 
 
 parameter_types! {
@@ -129,46 +129,16 @@ pub type XcmOriginToTransactDispatchOrigin = (
 
 pub struct Todo;
 
-
-pub struct LocalAssetTransactor;
-impl<
-
-	> xcm_executor::traits::TransactAsset
-	for LocalAssetTransactor
-{
-	// fn deposit_asset(asset: &MultiAsset, location: &MultiLocation) -> Result {
-	// 	Ok(())
-	// }
-
-	fn withdraw_asset(asset: &MultiAsset, location: &MultiLocation) -> sp_std::result::Result<Assets, XcmError> {
-		// UnknownAsset::withdraw(asset, location).or_else(|_| {
-		// 	let who = AccountIdConvert::convert_ref(location)
-		// 		.map_err(|_| XcmError::from(Error::AccountIdConversionFailed))?;
-		// 	let currency_id = CurrencyIdConvert::convert(asset.clone())
-		// 		.ok_or_else(|| XcmError::from(Error::CurrencyIdConversionFailed))?;
-		// 	let amount: MultiCurrency::Balance = Match::matches_fungible(asset)
-		// 		.ok_or_else(|| XcmError::from(Error::FailedToMatchFungible))?
-		// 		.saturated_into();
-		// 	MultiCurrency::withdraw(currency_id, &who, amount).map_err(|e| XcmError::FailedToTransactAsset(e.into()))
-		// })?;
-
-		log::trace!("{:?}", location);
-		Ok(asset.clone().into())
-
-
-
-	}
-}
-
-// pub type LocalAssetTransactor = MultiCurrencyAdapter<
-// 	Tokens,
-// 	UnknownTokens,
-// 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
-// 	AccountId,
-// 	LocationToAccountId,
-// 	CurrencyId,
-// 	CurrencyIdConvert,
-// >;
+#[cfg(feature = "develop")]
+pub type LocalAssetTransactor = MultiCurrencyAdapter<
+	Tokens,
+	UnknownTokens,
+	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
+	AccountId,
+	LocationToAccountId,
+	CurrencyId,
+	CurrencyIdConvert,
+>;
 
 
 parameter_types! {
@@ -176,11 +146,6 @@ parameter_types! {
 	pub const MaxInstructions: u32 = 10_000;
 }
 
-// parameter_types! {
-// 	// One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
-// 	pub const BaseXcmWeight: Weight = 100_000_000;
-// 	pub const MaxInstructions: u32 = 100;
-// }
 
 pub struct TradePassthrough();
 
@@ -202,20 +167,26 @@ impl xcm_executor::Config for XcmConfig {
 	type Call = Call;
 	type XcmSender = XcmRouter;
 	// How to withdraw and deposit an asset.
-	//type AssetTransactor = ();
+	#[cfg(not(develop))]
+	type AssetTransactor = ();
+	#[cfg(develop)]
 	type AssetTransactor = LocalAssetTransactor;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
 	type IsReserve = NativeAsset;
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
 	type LocationInverter = LocationInverter<Ancestry>;
-	type Barrier = Todo;//Barrier;
+	type Barrier = Todo;
 	type Weigher = FixedWeightBounds<BaseXcmWeight, Call, MaxInstructions>;
-	//type Trader = ();
+	#[cfg(not(develop))]
+	type Trader = ();
+	#[cfg(develop)]
 	type Trader = TradePassthrough;
-	//type ResponseHandler = (); // Don't handle responses for now.
+	#[cfg(not(develop))]
+	type ResponseHandler = ();
+	#[cfg(develop)]
 	type ResponseHandler = RelayerXcm;
 	type SubscriptionService = RelayerXcm;
-	type AssetClaims = RelayerXcm;s
+	type AssetClaims = RelayerXcm;
 	type AssetTrap = RelayerXcm;
 }
 
@@ -240,7 +211,6 @@ impl orml_xtokens::Config for Runtime {
 impl orml_unknown_tokens::Config for Runtime {
 	type Event = Event;
 }
-
 
 pub struct AccountIdToMultiLocation;
 impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
