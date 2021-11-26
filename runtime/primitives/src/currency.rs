@@ -15,8 +15,8 @@ use sp_runtime::sp_std::ops::Deref;
 pub struct CurrencyId(u128);
 
 impl CurrencyId {
-	pub const INVALID: CurrencyId = CurrencyId(0);
-	pub const PICA: CurrencyId = CurrencyId(1);
+	pub const INVALID: CurrencyId = CurrencyId(42);
+	pub const PICA: CurrencyId = CurrencyId(0);
 	pub const LAYR: CurrencyId = CurrencyId(2);
 	pub const CROWD_LOAN: CurrencyId = CurrencyId(3);
 
@@ -72,21 +72,3 @@ impl From<CurrencyId> for xcm::latest::Junction {
 		xcm::latest::Junction::GeneralKey(this.encode())
 	}
 }
-
-
-// #[cfg(test)]
-// mod tests {
-
-// 	use codec::*;
-//     use crate::currency::CurrencyId;
-
-// 	#[test]
-// 	fn decode() {
-// 		let id = vec![1u8,0,0,0,   0,0,0,0,  0,0,0,0,  0,0,0,0];
-// 		let id = CurrencyId::decode(&mut &id[..]).unwrap();
-// 		assert_eq!(id, CurrencyId::PICA);
-// 		let id = vec![2u8,0,0,0,   0,0,0,0,  0,0,0,0,  0,0,0,0];
-// 		let id = CurrencyId::decode(&mut &id[..]).unwrap();
-// 		assert_eq!(id, CurrencyId::LAYR);
-// 	}
-// }

@@ -18,7 +18,7 @@ fn transfer_from_relay_chain() {
 	env_logger_init();
     Picasso::execute_with(|| {
 		assert_ok!(picasso_runtime::AssetsRegistry::set_location(
-			CurrencyId::INVALID,
+			CurrencyId::PICA,
 			composable_traits::assets::XcmAssetLocation(MultiLocation::parent())
 		));
 	});
@@ -43,7 +43,7 @@ fn transfer_from_relay_chain() {
     });
 
     Picasso::execute_with(|| {
-        let balance = picasso_runtime::Tokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB));
+        let balance = picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB));
         assert_eq!(balance, 3 * PICA);
     });
 }
@@ -54,12 +54,12 @@ fn transfer_to_relay_chain() {
 	env_logger_init();
     Picasso::execute_with(|| {
 		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
+			CurrencyId::PICA,
 			composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
 		));
             let transferred = picasso_runtime::XTokens::transfer(
                 picasso_runtime::Origin::signed(ALICE.into()),
-                CurrencyId::INVALID,
+                CurrencyId::PICA,
                 3 * PICA,
                 Box::new(
                     MultiLocation::new(
@@ -75,7 +75,7 @@ fn transfer_to_relay_chain() {
 				assert_ok!(transferred);
 
             let remaining = picasso_runtime::Tokens::free_balance(
-                CurrencyId::INVALID, &AccountId::from(ALICE));
+                CurrencyId::PICA, &AccountId::from(ALICE));
 
             assert_eq!(remaining, 200 * PICA - 3 * PICA);
     });
@@ -137,17 +137,17 @@ fn transfer_from_dali() {
 
 	Dali::execute_with(|| {
 		assert_ok!(<dali_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
-			CurrencyId::INVALID,
-			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), CurrencyId::INVALID.into())))
+			CurrencyId::PICA,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), CurrencyId::PICA.into())))
 		));
 	});
 
-
+	let local_withdraw_amount = 3 * PICA;
 	Dali::execute_with(|| {
 		assert_ok!(dali_runtime::XTokens::transfer(
 			dali_runtime::Origin::signed(ALICE.into()),
-			CurrencyId::INVALID,
-			3 * PICA,
+			CurrencyId::PICA,
+			local_withdraw_amount,
 			Box::new(
 				MultiLocation::new(
 					1,
@@ -165,14 +165,14 @@ fn transfer_from_dali() {
 		));
 		assert_eq!(
 			dali_runtime::Balances::free_balance(&AccountId::from(ALICE)),
-			200 * PICA - 3 * PICA
+			200 * PICA - local_withdraw_amount
 		);
 	});
 
 	Picasso::execute_with(|| {
 		assert_eq!(
-			picasso_runtime::Tokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB)),
-			3 * PICA
+			picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB)),
+			local_withdraw_amount
 		);
 	});
 }
@@ -192,7 +192,7 @@ fn transfer_insufficient_amount_should_fail() {
 	Dali::execute_with(|| {
 		assert_ok!(dali_runtime::XTokens::transfer(
 			dali_runtime::Origin::signed(ALICE.into()),
-			CurrencyId::INVALID,
+			CurrencyId::PICA,
 			1_000_000 - 1,
 			Box::new(
 				MultiLocation::new(
@@ -217,7 +217,7 @@ fn transfer_insufficient_amount_should_fail() {
 
 	Picasso::execute_with(|| {
 		// Xcm should fail therefore nothing should be deposit into beneficiary account
-		assert_eq!(picasso_runtime::Tokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB)), 0);
+		assert_eq!(picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB)), 0);
 	});
 }
 

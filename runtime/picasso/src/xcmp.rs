@@ -42,10 +42,6 @@ use polkadot_parachain::primitives::Sibling;
 use pallet_xcm::XcmPassthrough;
 use xcm_builder::{AccountId32Aliases, AllowKnownQueryResponses, AllowSubscriptionsFrom, AllowTopLevelPaidExecutionFrom, EnsureXcmOrigin, FixedWeightBounds, LocationInverter, ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit};
 
-/// here we should allow only from hydradx/acala
-/// may be without credit
-pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
-
 
 parameter_types! {
 	// pub const RelayLocation: MultiLocation = MultiLocation::X1(Junction::Parent);
@@ -65,6 +61,16 @@ impl ShouldExecute for Todo {
 		Ok(())
 	}
 }
+
+match_type! {
+	pub type SpecParachain: impl Contains<MultiLocation> = {
+		MultiLocation { parents: 1, interior: X1(Parachain(2000)) } |
+			MultiLocation { parents: 1, interior: X1(Parachain(3000)) }
+	};
+}
+
+/// here we should allow only from hydradx/acala
+/// may be without credit
 
 // pub type Barrier = (
 // 	TakeWeightCredit,
@@ -146,7 +152,6 @@ parameter_types! {
 	pub const MaxInstructions: u32 = 10_000;
 }
 
-
 pub struct TradePassthrough();
 
 /// any payment to pass
@@ -162,7 +167,6 @@ impl WeightTrader for TradePassthrough {
 }
 
 pub struct XcmConfig;
-
 impl xcm_executor::Config for XcmConfig {
 	type Call = Call;
 	type XcmSender = XcmRouter;
@@ -224,12 +228,31 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 }
 
 
+/// Converts currency to and from local and remote
 pub struct CurrencyIdConvert;
 
+/// converts local currency into remote,
+/// native currency is built in
 impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for CurrencyIdConvert {
 	fn convert(id: CurrencyId) -> Option<MultiLocation> {
-		log::trace!("mapping {:?} on {:?}", id, ParachainInfo::parachain_id());
-		<AssetsRegistry as RemoteAssetRegistry>::asset_to_location(id).map(Into::into)
+		match id {
+			CurrencyId::INVALID => {
+				log::trace!("mapping for {:?} on {:?} parachain not found", id, ParachainInfo::parachain_id());
+				None
+			}
+			CurrencyId::PICA => Some(MultiLocation::new(
+				1,
+				X2(Parachain(ParachainInfo::parachain_id().into()), GeneralKey(id.encode())),
+			)),
+			_ => {
+				if let Some(location) = <AssetsRegistry as RemoteAssetRegistry>::asset_to_location(id).map(Into::into) {
+					Some(location)
+				} else {
+					log::trace!("mapping for {:?} on {:?} parachain not found", id, ParachainInfo::parachain_id());
+					None
+				}
+			}
+		}
 	}
 }
 
@@ -237,8 +260,7 @@ impl sp_runtime::traits::Convert<CurrencyId, Option<MultiLocation>> for Currency
 /// expected that currency in location is in format well known for local chain
 impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(location: MultiLocation) -> Option<CurrencyId> {
-
-		log::trace!("CurrencyIdConvert.convert {:?} on {:?}", &location, ParachainInfo::parachain_id());
+		log::trace!("converting {:?} on {:?}", &location, ParachainInfo::parachain_id());
 		match location {
 			MultiLocation {
 				parents,
@@ -246,16 +268,26 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 			} if parents == 1 && ParaId::from(id) == ParachainInfo::parachain_id() => {
 				// Handling native asset for this parachain
 				if let Ok(currency_id) = CurrencyId::decode(&mut &key[..]) {
-					Some(currency_id)
+					// we currently have only one native asset
+					match currency_id {
+						CurrencyId::PICA => Some(CurrencyId::PICA),
+						_ => {
+							log::error!("failed converting currency");
+							None
+						},
+					}
 				} else {
+					log::error!("failed converting currency");
 					None
 				}
 			}
+			// delegate to asset-registry
 			_ => {
-
-				let x= <AssetsRegistry as RemoteAssetRegistry>::location_to_asset(XcmAssetLocation(location)).map(Into::into);
-				//todo!("11111111111111111");
-				Some(x.unwrap())
+				let result =  <AssetsRegistry as RemoteAssetRegistry>::location_to_asset(XcmAssetLocation(location)).map(Into::into);
+				if result.is_none() {
+					log::error!("failed converting currency");
+				}
+				result
 			}
 		}
 	}
@@ -265,25 +297,17 @@ impl Convert<MultiLocation, Option<CurrencyId>> for CurrencyIdConvert {
 /// covert remote to local, usually when receiving transfer
 impl Convert<MultiAsset, Option<CurrencyId>> for CurrencyIdConvert {
 	fn convert(asset: MultiAsset) -> Option<CurrencyId> {
-		log::trace!("{:?}", &asset);
+		log::trace!("converting {:?}", &asset);
 		if let MultiAsset {
 			id: Concrete(location), ..
 		} = asset
 		{
 			Self::convert(location)
 		} else {
-			log::trace!("FAILED TO FIND REMOTE ASSET");
+			log::error!("failed to find remote asset");
 			None
 		}
 	}
-}
-
-// For test purposes.
-match_type! {
-	pub type SpecParachain: impl Contains<MultiLocation> = {
-		MultiLocation { parents: 1, interior: X1(Parachain(2000)) } |
-			MultiLocation { parents: 1, interior: X1(Parachain(2001)) }
-	};
 }
 
 impl pallet_xcm::Config for Runtime {
