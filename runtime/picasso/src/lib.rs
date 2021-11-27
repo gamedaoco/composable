@@ -776,6 +776,15 @@ impl call_filter::Config for Runtime {
 	type WeightInfo = ();
 }
 
+
+impl orml_currencies::Config for Runtime {
+	type Event = Event;
+	type MultiCurrency = OrmlTokensAdapter<Runtime>;
+	type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+	type GetNativeCurrencyId = NativeAssetId;
+	type WeightInfo = ();
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 #[cfg(not(feature = "develop"))] // https://github.com/paritytech/substrate/issues/10286
 construct_runtime!(
@@ -834,6 +843,7 @@ construct_runtime!(
 	}
 );
 
+
 #[cfg(feature = "develop")]
 construct_runtime!(
 	pub enum Runtime where
@@ -877,6 +887,7 @@ construct_runtime!(
 		UnknownTokens: orml_unknown_tokens::{Pallet, Storage, Event} = 45,
 
 		Oracle: oracle::{Pallet, Call, Storage, Event<T>} = 50,
+		Currencies: orml_currencies::{Pallet, Call, Event<T>} = 59,
 		Tokens: orml_tokens::{Pallet, Call, Storage, Event<T>} = 51,
 		Factory: currency_factory::{Pallet, Storage, Event<T>} = 52,
 		Vault: vault::{Pallet, Call, Storage, Event<T>} = 53,
