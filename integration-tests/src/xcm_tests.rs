@@ -154,3 +154,79 @@ fn query_holding() {
 			// 	);
 			// });
 }
+
+
+#[test]
+fn withdraw_and_deposit_back() {
+	KusamaNetwork::reset();
+	env_logger_init();
+	let send_amount = 10;
+
+	Picasso::execute_with(|| {
+		let message = Xcm(vec![
+			WithdrawAsset((Here, send_amount).into()),
+			buy_execution((Here, send_amount)),
+			DepositAsset {
+				assets: All.into(),
+				max_assets: 1,
+				beneficiary: Parachain(PICASSO_PARA_ID).into(),
+			},
+		]);
+		assert_ok!(picasso_runtime::RelayerXcm::send_xcm(Here, Parent, message.clone(),));
+	});
+
+	KusamaRelay::execute_with(|| {
+		assert_eq!(
+			kusama_runtime::Balances::free_balance(para_account_id(PICASSO_PARA_ID)),
+			PICASSO_RELAY_BALANCE - send_amount
+		);
+	});
+}
+
+
+#[test]
+fn withdraw_and_deposit_back2() {
+	KusamaNetwork::reset();
+	env_logger_init();
+	let send_amount = 10;
+
+
+	let asset = (Here, send_amount).into();
+	Picasso::execute_with(|| {
+		let message = Xcm(vec![
+			WithdrawAsset(asset),
+			InitiateReserveWithdraw {
+				assets : All.into(),
+				reserve: (1, Parachain(PICASSO_PARA_ID)).into(),
+
+				xcm : Xcm(vec![
+					buy_execution((Parent, send_amount)),
+
+					DepositReserveAsset {
+						assets: All.into(),
+						max_assets: 1,
+						dest: (1, Parachain(PICASSO_PARA_ID)).into(),
+						xcm : Xcm(vec![
+							buy_execution((Parent, send_amount)),
+							DepositAsset {
+								assets: All.into(),
+								max_assets: 1,
+								beneficiary: Parachain(PICASSO_PARA_ID).into(),
+							},
+						])
+					},
+				])
+			},
+
+
+		]);
+		assert_ok!(picasso_runtime::RelayerXcm::send_xcm(Here, Parent, message.clone(),));
+	});
+
+	KusamaRelay::execute_with(|| {
+		assert_eq!(
+			kusama_runtime::Balances::free_balance(para_account_id(PICASSO_PARA_ID)),
+			PICASSO_RELAY_BALANCE - send_amount
+		);
+	});
+}

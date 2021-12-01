@@ -13,12 +13,16 @@ use sp_runtime::traits::AccountIdConversion;
 use xcm_emulator::TestExt;
 use picasso_runtime as dali_runtime;
 
+/// assumes that our parachain has native relay token on relay account
+/// and kusama can send xcm message to our network and transfer native token onto local network
 #[test]
 fn transfer_from_relay_chain() {
+	crate::kusama_test_net::KusamaNetwork::reset();
 	env_logger_init();
     Picasso::execute_with(|| {
 		assert_ok!(picasso_runtime::AssetsRegistry::set_location(
-			CurrencyId::PICA,
+			CurrencyId::KSM, // KSM id as it is locally
+			// if we get tokens from parent chain, these can be only native token
 			composable_traits::assets::XcmAssetLocation(MultiLocation::parent())
 		));
 	});
@@ -43,14 +47,15 @@ fn transfer_from_relay_chain() {
     });
 
     Picasso::execute_with(|| {
-        let balance = picasso_runtime::Tokens::free_balance(CurrencyId::PICA, &AccountId::from(BOB));
-        assert_eq!(balance, 3 * PICA);
+        let native_token = picasso_runtime::Assets::free_balance(CurrencyId::KSM, &AccountId::from(BOB));
+        assert_eq!(native_token, 3 * PICA);
     });
 }
 
 
 #[test]
 fn transfer_to_relay_chain() {
+	crate::kusama_test_net::KusamaNetwork::reset();
 	env_logger_init();
     Picasso::execute_with(|| {
 		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
@@ -91,6 +96,7 @@ fn transfer_to_relay_chain() {
 
 #[test]
 fn transfer_from_picasso_to_dali() {
+	crate::kusama_test_net::KusamaNetwork::reset();
 	env_logger_init();
 
 
@@ -144,7 +150,7 @@ fn transfer_from_picasso_to_dali() {
 		let d = dali_runtime::Assets::free_balance(CurrencyId::PICA, &AccountId::from(ALICE));
 		//let b = dali_runtime::UnknownTokens::free_balance(CurrencyId::INVALID, &AccountId::from(BOB));,
 		assert_eq!(
-			a + b + c + ,
+			a + b + c + d,
 			3 * PICA
 		);
 	});
@@ -152,6 +158,7 @@ fn transfer_from_picasso_to_dali() {
 
 #[test]
 fn transfer_from_dali() {
+	crate::kusama_test_net::KusamaNetwork::reset();
 	env_logger_init();
 
 	Dali::execute_with(|| {

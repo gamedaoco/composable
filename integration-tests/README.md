@@ -29,7 +29,11 @@ let amount_and_asset_id = MultiAsset{ fun : Fungible(42), id: asset_id};
 
 Transfer currency is based on sending some named messages interpreted on each chain, but always ends with `dispatch` calls on target chain.
 
-- calls `XTokens` pallet to map local tokens to remote
+
+- Pallet -> `XTokens`: Transfer Local Assets
+- 'XTokens` -> 'Converters' : pallet to map local tokens to remote
+- `XTokens` -> XTokens : Build XCM message depending on remote type
+- XTokens -> XcmExecutor : Execute
 - it will call `xcm_executor::traits::TransactAsset`  to form proper XCM messages with unique request id
 - then messages will be put into `XcmQueue` on-chain
 - Networking layer will ensure that messages appear on another chain
@@ -62,3 +66,10 @@ Transfer currency is based on sending some named messages interpreted on each ch
 - https://wiki.polkadot.network/docs/learn-crosschain
 - https://research.web3.foundation/en/latest/polkadot/XCMP/Opening_closing%20XCMP%20Channel.html
 - https://medium.com/web3foundation/polkadots-messaging-scheme-b1ec560908b7
+
+
+## How to run
+
+```shell
+RUST_LOG=trace,parity-db=error,trie=error,runtime=trace,substrate-relay=trace,bridge=trace cargo test   --features develop -- --nocapture --test-threads=1
+```

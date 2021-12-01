@@ -101,7 +101,6 @@ pub fn kusama_ext() -> sp_io::TestExternalities {
 		balances: vec![
 			(AccountId::from(ALICE), ALICE_RELAY_BALANCE),
 			(ParaId::from(PICASSO_PARA_ID).into_account(), PICASSO_RELAY_BALANCE),
-			(ParaId::from(DALI_PARA_ID).into_account(), DALI_RELAY_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut storage)
