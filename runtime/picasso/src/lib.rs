@@ -506,6 +506,14 @@ impl orml_tokens::Config for Runtime {
 	type DustRemovalWhitelist = DustRemovalWhitelist;
 }
 
+// impl orml_currencies::Config for Runtime {
+// 	type Event = Event;
+// 	type MultiCurrency = OrmlTokensAdapter<Runtime>;
+// 	type NativeCurrency = BasicCurrencyAdapter<Runtime, Balances, Amount, BlockNumber>;
+// 	type GetNativeCurrencyId = NativeAssetId;
+// 	type WeightInfo = weights::currencies::BasiliskWeight<Runtime>;
+// }
+
 parameter_types! {
 	pub const LiquidRewardId: PalletId = PalletId(*b"Liquided");
 	pub const CrowdloanCurrencyId: CurrencyId = CurrencyId::CROWD_LOAN;

@@ -138,5 +138,19 @@ fn query_holding() {
 			kusama_runtime::Balances::free_balance(para_account_id(PICASSO_PARA_ID)),
 			PICASSO_RELAY_BALANCE - send_amount
 		);
-	});
+				// Deposit executed
+				assert_eq!(kusama_runtime::Balances::free_balance(para_account_id(DALI_PARA_ID)), send_amount);
+			});
+
+			// // Check that QueryResponse message was received
+			// ParaA::execute_with(|| {
+			// 	assert_eq!(
+			// 		parachain::MsgQueue::received_dmp(),
+			// 		vec![Xcm(vec![QueryResponse {
+			// 			query_id: query_id_set,
+			// 			response: Response::Assets(MultiAssets::new()),
+			// 			max_weight: 1_000_000_000,
+			// 		}])],
+			// 	);
+			// });
 }

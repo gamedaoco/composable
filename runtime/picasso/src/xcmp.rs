@@ -41,7 +41,7 @@ use xcm_builder::{
 	ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
 	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
 };
-use xcm_executor::{traits::WeightTrader, Assets, Config, XcmExecutor};
+use xcm_executor::{traits::{WeightTrader, TransactAsset}, Assets, Config, XcmExecutor};
 
 parameter_types! {
 	// pub const RelayLocation: MultiLocation = MultiLocation::X1(Junction::Parent);
@@ -121,9 +121,54 @@ pub type XcmOriginToTransactDispatchOrigin = (
 );
 
 #[cfg(feature = "develop")]
+pub struct LocalAssetTransactor2;
+
+impl TransactAsset for LocalAssetTransactor2 {
+    fn can_check_in(_origin: &MultiLocation, _what: &MultiAsset) -> XcmResult {
+		Err(Error::Unimplemented)
+	}
+
+    fn check_in(_origin: &MultiLocation, _what: &MultiAsset) {}
+
+    fn check_out(_dest: &MultiLocation, _what: &MultiAsset) {}
+
+    fn deposit_asset(_what: &MultiAsset, _who: &MultiLocation) -> XcmResult {
+
+		Err(Error::Unimplemented)
+	}
+
+    fn withdraw_asset(_what: &MultiAsset, _who: &MultiLocation) -> Result<Assets, Error> {
+		panic!("withdraw_asset");
+		Err(Error::Unimplemented)
+	}
+
+    fn transfer_asset(
+		_asset: &MultiAsset,
+		_from: &MultiLocation,
+		_to: &MultiLocation,
+	) -> Result<Assets, Error> {
+		Err(Error::Unimplemented)
+	}
+
+    fn beam_asset(
+		asset: &MultiAsset,
+		from: &MultiLocation,
+		to: &MultiLocation,
+	) -> Result<Assets, Error> {
+		match Self::transfer_asset(asset, from, to) {
+			Err(Error::Unimplemented) => {
+				let assets = Self::withdraw_asset(asset, from)?;
+				// Not a very forgiving attitude; once we implement roll-backs then it'll be nicer.
+				Self::deposit_asset(asset, to)?;
+				Ok(assets)
+			},
+			result => result,
+		}
+	}
+}
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	Tokens,
-	UnknownTokens,
+	crate::Assets,
+	(),
 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
 	AccountId,
 	LocationToAccountId,

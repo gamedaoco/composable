@@ -92,6 +92,7 @@ fn default_parachains_host_configuration() -> HostConfiguration<BlockNumber> {
 
 pub const ALICE_RELAY_BALANCE: u128 = 2002 * PICA;
 pub const PICASSO_RELAY_BALANCE: u128 = 10 * PICA;
+pub const DALI_RELAY_BALANCE: u128 = 5 * PICA;
 
 pub fn kusama_ext() -> sp_io::TestExternalities {
 	use kusama_runtime::{Runtime, System};
@@ -99,8 +100,8 @@ pub fn kusama_ext() -> sp_io::TestExternalities {
 	balances::GenesisConfig::<Runtime> {
 		balances: vec![
 			(AccountId::from(ALICE), ALICE_RELAY_BALANCE),
-			(ParaId::from(PICASSO_PARA_ID).into_account(), 10 * PICA),
-			//(ParaId::from(DALI_PARA_ID).into_account(), 0),
+			(ParaId::from(PICASSO_PARA_ID).into_account(), PICASSO_RELAY_BALANCE),
+			(ParaId::from(DALI_PARA_ID).into_account(), DALI_RELAY_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut storage)
