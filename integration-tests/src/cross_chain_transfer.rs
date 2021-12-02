@@ -7,7 +7,7 @@ use xcm::latest::prelude::*;
 use cumulus_primitives_core::ParaId;
 use orml_traits::currency::MultiCurrency;
 use sp_runtime::traits::AccountIdConversion;
-
+use codec::Encode;
 use xcm_emulator::TestExt;
 use picasso_runtime as dali_runtime;
 
@@ -90,6 +90,69 @@ fn transfer_to_relay_chain() {
 		);
 	});
 }
+
+
+#[test]
+fn transfer_from_dali() {
+	crate::kusama_test_net::KusamaNetwork::reset();
+	env_logger_init();
+
+	Picasso::execute_with(|| {
+		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+			CurrencyId::PICA,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::new(1, X2(Parachain(DALI_PARA_ID), GeneralKey(CurrencyId::PICA.encode()))))
+		));
+	});
+
+	let local_withdraw_amount = 3 * PICA;
+	Dali::execute_with(|| {
+		assert_ok!(dali_runtime::XTokens::transfer(
+			dali_runtime::Origin::signed(ALICE.into()),
+			CurrencyId::PICA,
+			local_withdraw_amount,
+			Box::new(
+				MultiLocation::new(
+					1,
+					X2(
+						Junction::Parachain(PICASSO_PARA_ID),
+						Junction::AccountId32 {
+							id: BOB,
+							network: NetworkId::Any,
+						}
+					)
+				)
+				.into()
+			),
+			399_600_000_000
+		));
+		assert_eq!(
+			dali_runtime::Assets::free_balance(CurrencyId::PICA, &AccountId::from(ALICE)),
+			200 * PICA - local_withdraw_amount
+		);
+	});
+
+	let zz = MultiLocation::new(
+		1,
+		X2(
+			Junction::Parachain(PICASSO_PARA_ID),
+			Junction::AccountId32 {
+				id: BOB,
+				network: NetworkId::Any,
+			}
+		)
+	);
+	Picasso::execute_with(|| {
+		let x = picasso_runtime::Assets::free_balance(CurrencyId::INVALID, &AccountId::from(BOB));
+		//let z = picasso_runtime::UnknownTokens::concrete_fungible_balances(zz, 0);
+		let tx = picasso_runtime::Assets::free_balance(CurrencyId::PICA, &AccountId::from(BOB));
+		assert_eq!(
+			x + tx,
+			local_withdraw_amount
+		);
+	});
+}
+
+
 
 #[test]
 fn transfer_insufficient_amount_should_fail() {
