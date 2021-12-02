@@ -66,13 +66,18 @@ OtherXcmExecutor -> OtherAssets: Dispatch to call relevant pallet for accepting 
 - https://research.web3.foundation/en/latest/polkadot/XCMP/index.html
 - https://medium.com/polkadot-network/xcm-the-cross-consensus-message-format-3b77b1373392
 
+
+### XCMP desing
+
+- https://www.youtube.com/watch?v=wrA9vlPjVPE
+- https://research.web3.foundation/en/latest/polkadot/XCMP/Opening_closing%20XCMP%20Channel.html
+
 ### Generic context
 
 - https://wiki.polkadot.network/docs/learn-bridges
 - https://wiki.polkadot.network/docs/learn-parachains
 - https://polkadot.network/Polkadot-lightpaper.pdf
 - https://wiki.polkadot.network/docs/learn-crosschain
-- https://research.web3.foundation/en/latest/polkadot/XCMP/Opening_closing%20XCMP%20Channel.html
 - https://medium.com/web3foundation/polkadots-messaging-scheme-b1ec560908b7
 
 

@@ -50,6 +50,47 @@ fn transfer_from_relay_chain() {
     });
 }
 
+
+#[test]
+fn transfer_to_relay_chain() {
+	crate::kusama_test_net::KusamaNetwork::reset();
+	env_logger_init();
+    Picasso::execute_with(|| {
+		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+			CurrencyId::KSM,
+			composable_traits::assets::XcmAssetLocation(MultiLocation::parent()),
+		));
+            let transferred = picasso_runtime::XTokens::transfer(
+                picasso_runtime::Origin::signed(ALICE.into()),
+                CurrencyId::KSM,
+                3 * PICA,
+                Box::new(
+                    MultiLocation::new(
+                        1,
+                        X1(Junction::AccountId32 {
+                            id : BOB,
+                            network: NetworkId::Any,
+                        })
+                    ).into()
+                ),
+                4_600_000_000);
+
+				assert_ok!(transferred);
+
+            let remaining = picasso_runtime::Assets::free_balance(
+                CurrencyId::KSM, &AccountId::from(ALICE));
+
+            assert_eq!(remaining, ALICE_PARACHAIN_KSM - 3 * PICA);
+    });
+
+    KusamaRelay::execute_with(|| {
+		assert_eq!(
+			kusama_runtime::Balances::free_balance(&AccountId::from(BOB)),
+			2999893333340 // 3 * PICA - fee
+		);
+	});
+}
+
 #[test]
 fn transfer_insufficient_amount_should_fail() {
 	Dali::execute_with(|| {

@@ -11,6 +11,7 @@ use xcm_emulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain
 type Balances = u128;
 pub const ALICE: [u8; 32] = [4u8; 32];
 pub const BOB: [u8; 32] = [5u8; 32];
+pub const POOR: [u8; 32] = [13u8; 32];
 pub const PICA: Balances = 1_000_000_000_000;
 
 decl_test_parachain! {
@@ -123,6 +124,7 @@ pub fn kusama_ext() -> sp_io::TestExternalities {
 
 pub const ALICE_PARACHAIN_BALANCE: u128 = 200 * 1_000_000_000_000;
 pub const ALICE_PARACHAIN_PICA: u128 = 200 * 1_000_000_000_000;
+pub const ALICE_PARACHAIN_KSM: u128 = 13 * 1_000_000_000_000;
 
 pub fn picasso_ext(parachain_id: u32) -> sp_io::TestExternalities {
 	let parachain_id = parachain_id.into();
@@ -140,7 +142,10 @@ pub fn picasso_ext(parachain_id: u32) -> sp_io::TestExternalities {
 	)
 	.unwrap();
 	orml_tokens::GenesisConfig::<Runtime> {
-		balances: vec![(AccountId::from(ALICE), CurrencyId::PICA, ALICE_PARACHAIN_PICA)],
+		balances: vec![
+			(AccountId::from(ALICE), CurrencyId::PICA, ALICE_PARACHAIN_PICA),
+			(AccountId::from(ALICE), CurrencyId::KSM, ALICE_PARACHAIN_KSM)
+			],
 	}
 	.assimilate_storage(&mut storage)
 	.unwrap();
