@@ -163,7 +163,7 @@ impl xcm_executor::Config for XcmConfig {
 	type AssetTransactor = LocalAssetTransactor;
 
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
-	type IsReserve = xcm_builder::NativeAsset;
+	type IsReserve = MultiNativeAsset;
 	type IsTeleporter = (); // <- should be enough to allow teleportation of PICA
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
