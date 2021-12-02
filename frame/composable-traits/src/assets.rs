@@ -46,6 +46,8 @@ pub trait RemoteAssetRegistry {
 	/// Adds mapping between native location and local asset id and vice versa.
 	///
 	/// Emits `LocationSet` event when successful.
+	/// `asset_id` - local id
+	/// `location` - remote location relative to this chain
 	fn set_location(asset_id: Self::AssetId, location: Self::AssetNativeLocation)
 		-> DispatchResult;
 

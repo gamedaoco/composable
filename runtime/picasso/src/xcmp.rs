@@ -41,7 +41,7 @@ use xcm_builder::{
 	ParentIsDefault, RelayChainAsNative, SiblingParachainAsNative, SiblingParachainConvertsVia,
 	SignedAccountId32AsNative, SignedToAccountId32, SovereignSignedViaLocation, TakeWeightCredit,
 };
-use xcm_executor::{traits::WeightTrader, Assets, Config, XcmExecutor};
+use xcm_executor::{traits::{WeightTrader, TransactAsset}, Assets, Config, XcmExecutor};
 
 parameter_types! {
 	// pub const RelayLocation: MultiLocation = MultiLocation::X1(Junction::Parent);
@@ -120,9 +120,8 @@ pub type XcmOriginToTransactDispatchOrigin = (
 	XcmPassthrough<Origin>,
 );
 
-#[cfg(feature = "develop")]
 pub type LocalAssetTransactor = MultiCurrencyAdapter<
-	Tokens,
+	crate::Assets,
 	UnknownTokens,
 	IsNativeConcrete<CurrencyId, CurrencyIdConvert>,
 	AccountId,

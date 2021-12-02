@@ -21,22 +21,34 @@ We do not use `Teleport` messages as it is considered unsafe.
 Amounts are defined as next:
 ```rust
 // next tells 1 networks up (jump to relay, find chain with ID, than encode para native asset),
-let asset_id = AssetId::Concrete(AssetId::Concrete(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), GeneralKey(СurrencyId::PICA.encode()))));
+let asset_id = AssetId::Concrete(MultiLocation::new(1, X2(Parachain(PICASSO_PARA_ID), GeneralKey(СurrencyId::PICA.encode())));
 // here we encode amount of 42 tokens to be manipulated
 let amount_and_asset_id = MultiAsset{ fun : Fungible(42), id: asset_id};
 ```
 
+Transfer currency is based on sending some named messages interpreted on each chain, but always ends with `dispatch` calls on target chain.  It is possible to send a message and ask send a response about success/fail operation, but that happens not in same block. For selling out things on DEX, will add `Transact` instruction to appreciate pallet */
 
-Transfer currency is based on sending some named messages interpreted on each chain, but always ends with `dispatch` calls on target chain.
 
-- calls `XTokens` pallet to map local tokens to remote
-- it will call `xcm_executor::traits::TransactAsset`  to form proper XCM messages with unique request id
-- then messages will be put into `XcmQueue` on-chain
-- Networking layer will ensure that messages appear on another chain
-- Messages will be `dispatched` to call relevant pallet for accepting foreign assets.
-- It is possible to send a message and ask send a response about success/fail operation, but that happens not in same block
-- for selling out things on DEX, will add `Transact` instruction to appreciate pallet
+```plantuml
+@startuml
+participant Pallet as pallet
+pallet -> XTokens: Transfer Local Assets
+XTokens -> Converters : pallet to map local tokens to remote
 
+XTokens -> XTokens : Build XCM message depending on remote type
+XTokens -> XcmExecutor : Execute
+XcmExecutor -> TransactAsset : Withdraw
+TransactAsset -> Assets: Withdraw
+XcmExecutor -> XcmQueue : Put message
+note right
+ - Networking layer will ensure that messages appear on another chain
+end note
+...
+OtherXcmQueue -> OtherXcmExecutor: Receive message
+OtherXcmExecutor -> OtherAssets: Dispatch to call relevant pallet for accepting foreign assets
+
+@enduml
+```
 
 ## Readings
 
@@ -62,3 +74,10 @@ Transfer currency is based on sending some named messages interpreted on each ch
 - https://wiki.polkadot.network/docs/learn-crosschain
 - https://research.web3.foundation/en/latest/polkadot/XCMP/Opening_closing%20XCMP%20Channel.html
 - https://medium.com/web3foundation/polkadots-messaging-scheme-b1ec560908b7
+
+
+## How to run
+
+```shell
+RUST_LOG=trace,parity-db=error,trie=error,runtime=trace,substrate-relay=trace,bridge=trace cargo test   --features develop -- --nocapture --test-threads=1
+```

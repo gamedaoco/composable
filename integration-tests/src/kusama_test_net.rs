@@ -1,6 +1,6 @@
 //! Setup of Picasso running as if it is on Kusama relay
 use common::AccountId;
-use cumulus_primitives_core::{ParaId, XcmpMessageHandler};
+use cumulus_primitives_core::{ParaId};
 use polkadot_primitives::v1::{BlockNumber, MAX_CODE_SIZE, MAX_POV_SIZE};
 use polkadot_runtime_parachains::configuration::HostConfiguration;
 use primitives::currency::CurrencyId;
@@ -99,8 +99,7 @@ pub fn kusama_ext() -> sp_io::TestExternalities {
 	balances::GenesisConfig::<Runtime> {
 		balances: vec![
 			(AccountId::from(ALICE), ALICE_RELAY_BALANCE),
-			(ParaId::from(PICASSO_PARA_ID).into_account(), 10 * PICA),
-			//(ParaId::from(DALI_PARA_ID).into_account(), 0),
+			(ParaId::from(PICASSO_PARA_ID).into_account(), PICASSO_RELAY_BALANCE),
 		],
 	}
 	.assimilate_storage(&mut storage)
