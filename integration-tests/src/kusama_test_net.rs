@@ -1,6 +1,6 @@
 //! Setup of Picasso running as if it is on Kusama relay
 use common::AccountId;
-use cumulus_primitives_core::{ParaId};
+use cumulus_primitives_core::ParaId;
 use polkadot_primitives::v1::{BlockNumber, MAX_CODE_SIZE, MAX_POV_SIZE};
 use polkadot_runtime_parachains::configuration::HostConfiguration;
 use primitives::currency::CurrencyId;
@@ -11,7 +11,6 @@ use xcm_emulator::{decl_test_network, decl_test_parachain, decl_test_relay_chain
 type Balances = u128;
 pub const ALICE: [u8; 32] = [4u8; 32];
 pub const BOB: [u8; 32] = [5u8; 32];
-pub const POOR: [u8; 32] = [13u8; 32];
 pub const PICA: Balances = 1_000_000_000_000;
 
 decl_test_parachain! {
@@ -144,8 +143,8 @@ pub fn picasso_ext(parachain_id: u32) -> sp_io::TestExternalities {
 	orml_tokens::GenesisConfig::<Runtime> {
 		balances: vec![
 			(AccountId::from(ALICE), CurrencyId::PICA, ALICE_PARACHAIN_PICA),
-			(AccountId::from(ALICE), CurrencyId::KSM, ALICE_PARACHAIN_KSM)
-			],
+			(AccountId::from(ALICE), CurrencyId::KSM, ALICE_PARACHAIN_KSM),
+		],
 	}
 	.assimilate_storage(&mut storage)
 	.unwrap();

@@ -9,12 +9,15 @@ We do not use `Teleport` messages as it is considered unsafe.
 
 ## Flow
 
+Each XCMP exchange consists of two phases, setup of connection and transfer.
+
 ### Setup
 
-- Relay must to be added with parachains which will communicate
+- Communicating parachains pair should be added to Relay
 - Each parachain must add other parachain into `ParachainSystem` to allow requests from another chain
 - Each parachain setups execution prices and filters to secure XCMP messaging
 - Each parachain must add mapping for currency it wants to send to other parachain
+- Each parachain must deposit to  Relayer
 
 ### Transfer currency
 
@@ -26,17 +29,31 @@ let asset_id = AssetId::Concrete(MultiLocation::new(1, X2(Parachain(PICASSO_PARA
 let amount_and_asset_id = MultiAsset{ fun : Fungible(42), id: asset_id};
 ```
 
-Transfer currency is based on sending some named messages interpreted on each chain, but always ends with `dispatch` calls on target chain.  It is possible to send a message and ask send a response about success/fail operation, but that happens not in same block. For selling out things on DEX, will add `Transact` instruction to appreciate pallet */
+Transfer currency is based on sending some named messages interpreted on each chain, but always ends with `dispatch` calls on the target chain.  It is possible to send a message and ask for a callback response about success/fail operation, but that happens not in the same block. For selling out things on DEX, will add `Transact` instruction to appreciate pallet.
 
 
 ```plantuml
 @startuml
-participant Pallet as pallet
-pallet -> XTokens: Transfer Local Assets
-XTokens -> Converters : pallet to map local tokens to remote
 
-XTokens -> XTokens : Build XCM message depending on remote type
-XTokens -> XcmExecutor : Execute
+box Picasso #LightYellow
+    participant Pallet as pallet
+    participant XTokens as xtokens
+    participant XcmExecutor
+    participant TransactAsset
+    participant Converters
+    participant XcmQueue
+    participant Assets
+end box
+
+box Hydra #LightBlue
+    participant "XcmQueue" as hydra_xcm_queue
+    participant "XcmExecutor" as hydra_xcm_executor
+    participant "Assets" as hydra_assets
+end box
+pallet -> xtokens: Transfer Local Assets
+xtokens -> Converters: pallet to map local tokens to remote
+xtokens -> xtokens : Build XCM message depending on remote type
+xtokens -> XcmExecutor : Execute
 XcmExecutor -> TransactAsset : Withdraw
 TransactAsset -> Assets: Withdraw
 XcmExecutor -> XcmQueue : Put message
@@ -44,8 +61,8 @@ note right
  - Networking layer will ensure that messages appear on another chain
 end note
 ...
-OtherXcmQueue -> OtherXcmExecutor: Receive message
-OtherXcmExecutor -> OtherAssets: Dispatch to call relevant pallet for accepting foreign assets
+hydra_xcm_queue -> hydra_xcm_executor: Receive message
+hydra_xcm_executor -> hydra_assets: Dispatch to call relevant pallet for accepting foreign assets
 
 @enduml
 ```
@@ -86,3 +103,8 @@ OtherXcmExecutor -> OtherAssets: Dispatch to call relevant pallet for accepting 
 ```shell
 RUST_LOG=trace,parity-db=error,trie=error,runtime=trace,substrate-relay=trace,bridge=trace cargo test   --features develop -- --nocapture --test-threads=1
 ```
+
+### Issues
+
+We use ORML + Cumulus, which does not support out of box access to all instruction.
+

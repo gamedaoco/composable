@@ -2,10 +2,21 @@
 use codec::{Decode, Encode};
 use frame_support::dispatch::DispatchResult;
 use scale_info::TypeInfo;
+use xcm::latest::MultiLocation;
 
+/// works only with concrete assets
 #[derive(Debug, Encode, Decode, Clone, PartialEq, Eq, TypeInfo)]
 //#[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
 pub struct XcmAssetLocation(pub xcm::latest::MultiLocation);
+
+impl XcmAssetLocation {
+	/// relay native asset
+	pub const RELAY_NATIVE: XcmAssetLocation = XcmAssetLocation(MultiLocation::parent());
+
+	/// local native, is equivalent to (1, LOCAL_PARACHAIN_ID), and to (1, LOCAL_PARACHAIN_ID, 1)
+	/// and to (0, 1)
+	pub const LOCAL_NATIVE: XcmAssetLocation = XcmAssetLocation(MultiLocation::here());
+}
 
 impl Default for XcmAssetLocation {
 	fn default() -> Self {

@@ -21,7 +21,6 @@ impl CurrencyId {
 	pub const CROWD_LOAN: CurrencyId = CurrencyId(3);
 	pub const KSM: CurrencyId = CurrencyId(4);
 
-
 	pub const LOCAL_LP_TOKEN_START: CurrencyId = CurrencyId(u128::MAX / 2);
 }
 

@@ -1,5 +1,6 @@
 //! Basic simple XCM setup and usage sanity checks on low level (not involving too much of
 //! Cumulus/ORML abstractions) Partially ported from articles and examples of https://github.com/paritytech/polkadot/blob/master/xcm/xcm-simulator/example/src/lib.rs
+//! Cannot port QueryHold because it is not implemented
 
 use crate::{
 	env_logger_init,
@@ -7,6 +8,7 @@ use crate::{
 };
 use codec::Encode;
 use common::AccountId;
+use composable_traits::assets::{RemoteAssetRegistry, XcmAssetLocation};
 use cumulus_primitives_core::ParaId;
 use kusama_runtime::*;
 use picasso_runtime as dali_runtime;
@@ -16,7 +18,6 @@ use support::assert_ok;
 use xcm::latest::prelude::*;
 use xcm_emulator::TestExt;
 use xcm_executor::XcmExecutor;
-use composable_traits::assets::RemoteAssetRegistry;
 
 // Helper function for forming buy execution message
 fn buy_execution<C>(fees: impl Into<MultiAsset>) -> Instruction<C> {
@@ -45,20 +46,27 @@ fn throw_exception() {
 	});
 }
 
+/// this is low levl
 #[test]
 fn initiate_reserver_withdraw_on_relay() {
 	crate::kusama_test_net::KusamaNetwork::reset();
 	env_logger_init();
 	Picasso::execute_with(|| {
-		assert_ok!(picasso_runtime::AssetsRegistry::set_location(
-			CurrencyId::INVALID, // KSM id as it is locally
-			// if we get tokens from parent chain, these can be only native token
-			composable_traits::assets::XcmAssetLocation(MultiLocation::parent())
+		assert_ok!(<picasso_runtime::AssetsRegistry as RemoteAssetRegistry>::set_location(
+			CurrencyId::KSM,
+			XcmAssetLocation::RELAY_NATIVE,
 		));
 
-		let here = MultiLocation::new(0, Here);
-		let asset_id =MultiLocation::parent();
-		let asset_id = AssetId::Concrete(asset_id);
+		let origin = MultiLocation::new(
+			0,
+			X1(AccountId32 {
+				id: crate::kusama_test_net::ALICE,
+				// it assumes that above account public key was used on all networks by bob, not
+				// mapping, so it will match any
+				network: NetworkId::Any,
+			}),
+		);
+		let asset_id = AssetId::Concrete(MultiLocation::parent());
 		let assets = MultiAsset { fun: Fungible(42), id: asset_id };
 		let xcm = Xcm(vec![
 			WithdrawAsset(assets.into()),
@@ -69,11 +77,10 @@ fn initiate_reserver_withdraw_on_relay() {
 			},
 		]);
 
-		let executed =
-			XcmExecutor::<XcmConfig>::execute_xcm_in_credit(here, xcm, 10000000000, 10000000000);
+		let executed = <picasso_runtime::Runtime as cumulus_pallet_xcmp_queue::Config>::XcmExecutor::execute_xcm_in_credit(origin, xcm, 10000000000, 10000000000);
 		match executed {
-			Outcome::Complete(42) => {},
-			_ => unreachable!(),
+			Outcome::Complete(0) => {},
+			_ => unreachable!("{:?}", executed),
 		}
 	});
 }
@@ -104,51 +111,6 @@ fn send_remark() {
 			.any(|r| matches!(r.event, Event::System(frame_system::Event::Remarked(_, _)))));
 	});
 }
-
-/// Scenario:
-/// A parachain wants to be notified that a transfer worked correctly.
-/// It sends a `QueryHolding` after the deposit to get notified on success.
-///
-/// Asserts that the balances are updated correctly and the expected XCM is sent.
-#[test]
-fn query_holding() {
-	KusamaNetwork::reset();
-	env_logger_init();
-
-	let send_amount = 10;
-	let query_id_set = 1234;
-
-	// Send a message which fully succeeds on the relay chain
-	Picasso::execute_with(|| {
-		let message = Xcm(vec![
-			WithdrawAsset((Here, send_amount).into()),
-			buy_execution((Here, send_amount)),
-			DepositAsset {
-				assets: All.into(),
-				max_assets: 1,
-				beneficiary: Parachain(DALI_PARA_ID).into(),
-			},
-			QueryHolding {
-				query_id: query_id_set,
-				dest: Parachain(PICASSO_PARA_ID).into(),
-				assets: All.into(),
-				max_response_weight: 1_000_000_000,
-			},
-		]);
-		// Send withdraw and deposit with query holding
-		assert_ok!(picasso_runtime::RelayerXcm::send_xcm(Here, Parent, message.clone(),));
-	});
-
-	// Check that transfer was executed
-	KusamaRelay::execute_with(|| {
-		// Withdraw executed
-		assert_eq!(
-			kusama_runtime::Balances::free_balance(para_account_id(PICASSO_PARA_ID)),
-			PICASSO_RELAY_BALANCE - send_amount
-		);
-	});
-}
-
 
 #[test]
 fn withdraw_and_deposit_back() {
