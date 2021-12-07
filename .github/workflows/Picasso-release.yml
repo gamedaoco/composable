@@ -3,7 +3,7 @@ name: "Picasso Community Release"
 on:
   push: 
     tags: 
-      - '*'
+      - 'picasso-*'
 env:
   CHAIN: "picasso"
 
