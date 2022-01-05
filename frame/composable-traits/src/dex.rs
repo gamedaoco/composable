@@ -1,6 +1,7 @@
 use codec::{Decode, Encode};
+use frame_support::{traits::Get, BoundedVec, RuntimeDebug};
 use scale_info::TypeInfo;
-use sp_runtime::{DispatchError, FixedU128, Permill};
+use sp_runtime::{DispatchError, DispatchResult, FixedU128, Permill};
 use sp_std::vec::Vec;
 
 /// Implement AMM curve from "StableSwap - efficient mechanism for Stablecoin liquidity by Micheal
@@ -66,7 +67,7 @@ pub trait CurveAmm {
 }
 
 /// Pool type
-#[derive(Encode, Decode, TypeInfo, Clone, Default, PartialEq, Eq, Debug)]
+#[derive(Encode, Decode, TypeInfo, Clone, Default, PartialEq, Eq, RuntimeDebug)]
 pub struct StableSwapPoolInfo<AccountId, AssetId> {
 	/// Owner of pool
 	pub owner: AccountId,
@@ -102,7 +103,7 @@ pub trait SimpleExchange {
 	) -> Result<Self::Balance, DispatchError>;
 }
 
-#[derive(Encode, Decode, TypeInfo, Clone, Default, PartialEq, Eq, Debug)]
+#[derive(Encode, Decode, TypeInfo, Clone, Default, PartialEq, Eq, RuntimeDebug)]
 pub struct ConstantProductPoolInfo<AccountId, AssetId> {
 	/// Owner of pool
 	pub owner: AccountId,
@@ -110,4 +111,29 @@ pub struct ConstantProductPoolInfo<AccountId, AssetId> {
 	pub lp_token: AssetId,
 	/// Amount of the fee pool charges for the exchange
 	pub fee: Permill,
+}
+
+#[derive(Encode, Decode, TypeInfo, Clone, PartialEq, Eq, RuntimeDebug)]
+pub enum DexRouteNode<PoolId> {
+	Curve(PoolId),
+	Uniswap(PoolId),
+}
+
+/// Describes route for DEX.
+/// `Direct` gives vector of pool_id to use as router.
+#[derive(Encode, Decode, TypeInfo, Clone, PartialEq, Eq, RuntimeDebug)]
+pub enum DexRoute<PoolId, MaxHops: Get<u32>> {
+	Direct(BoundedVec<DexRouteNode<PoolId>, MaxHops>),
+}
+
+pub trait DexRouter<AssetId, PoolId> {
+	/// If route is `None` then delete existing entry for `asset_pair`
+	/// If route is `Some` and no entry exist for `asset_pair` then add new entry
+	/// else update existing entry.
+	fn update_route(
+		asset_pair: (AssetId, AssetId),
+		route: Option<Vec<DexRouteNode<PoolId>>>,
+	) -> DispatchResult;
+	/// If route exist return `Some(Vec<PoolId>)`, else `None`.
+	fn get_route(asset_pair: (AssetId, AssetId)) -> Option<Vec<DexRouteNode<PoolId>>>;
 }
