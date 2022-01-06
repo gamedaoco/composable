@@ -27,6 +27,6 @@ rococo-local-raw.json
 rococo-local.json
 scripts/polkadot-launch/bin/polkadot
 scripts/polkadot-launch/*.log
-
+.rust-analyzer
 target
 .env
