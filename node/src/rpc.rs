@@ -5,6 +5,8 @@
 
 #![warn(missing_docs)]
 
+use pallet_assets::rpc::{Assets, AssetsApi};
+use primitives::currency::CurrencyId;
 use std::sync::Arc;
 
 use common::{AccountId, AccountIndex, Balance};
@@ -34,6 +36,7 @@ where
 	C: Send + Sync + 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<B, AccountId, AccountIndex>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<B, Balance>,
+	C::Api: pallet_assets::runtime_api::AssetsRuntimeApi<B, CurrencyId, AccountId, Balance>,
 	C::Api: BlockBuilder<B>,
 	P: TransactionPool + 'static,
 {
@@ -46,6 +49,8 @@ where
 	io.extend_with(SystemApi::to_delegate(FullSystem::new(client.clone(), pool, deny_unsafe)));
 
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client)));
+
+	io.extend_with(AssetsApi::to_delegate(Assets::new(client)));
 
 	// Extend this RPC with a custom API by using the following syntax.
 	// `YourRpcStruct` should have a reference to a client, which is needed

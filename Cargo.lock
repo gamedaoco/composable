@@ -1414,6 +1414,7 @@ dependencies = [
  "hex",
  "jsonrpc-core",
  "log 0.4.14",
+ "pallet-assets",
  "pallet-transaction-payment-rpc",
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",

@@ -1,4 +1,4 @@
-use crate::runtime_api::AssetsApi as AssetsRuntimeApi;
+use crate::runtime_api::AssetsRuntimeApi;
 use codec::Codec;
 use jsonrpc_core::{Error as RpcError, ErrorCode, Result as RpcResult};
 use jsonrpc_derive::rpc;
@@ -18,10 +18,10 @@ pub trait AssetsApi<BlockHash, AssetId, AccountId, Balance> {
 	) -> RpcResult<Option<Balance>>;
 }
 
-/// A struct that implements the `SumStorageApi`.
+/// A struct that implements the `AssetsApi`.
 pub struct Assets<C, Block> {
-	// If you have more generics, no need to SumStorage<C, M, N, P, ...>
-	// just use a tuple like SumStorage<C, (M, N, P, ...)>
+	// If you have more generics, no need to Assets<C, M, N, P, ...>
+	// just use a tuple like Assets<C, (M, N, P, ...)>
 	client: Arc<C>,
 	_marker: std::marker::PhantomData<Block>,
 }
