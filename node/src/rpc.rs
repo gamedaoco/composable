@@ -29,36 +29,6 @@ pub struct FullDeps<C, P> {
 	pub deny_unsafe: DenyUnsafe,
 }
 
-#[cfg(feature = "develop")]
-pub trait CApi:
-	substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
-	+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
-	+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
-{
-}
-
-#[cfg(feature = "develop")]
-impl<T> CApi for T where
-	T: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
-		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
-		+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
-{
-}
-
-#[cfg(not(feature = "develop"))]
-pub trait CApi:
-	substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
-	+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
-{
-}
-
-#[cfg(not(feature = "develop"))]
-impl<T> CApi for T where
-	T: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
-		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
-{
-}
-
 /// Instantiate all full RPC extensions.
 pub fn create<C, P, B>(deps: FullDeps<C, P>) -> jsonrpc_core::IoHandler<sc_rpc::Metadata>
 where
@@ -82,7 +52,6 @@ where
 
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client)));
 
-	#[cfg(feature = "develop")]
 	io.extend_with(AssetsApi::to_delegate(Assets::new(client)));
 
 	// Extend this RPC with a custom API by using the following syntax.
