@@ -67,7 +67,6 @@ orml-traits = { git = "https://github.com/open-web3-stack/open-runtime-module-li
 smallvec = "1.6.1"
 
 # local modules
-
 common = { path = "../common", default-features = false }
 primitives = { path = "../primitives", default-features = false }
 composable-traits = { path = "../../frame/composable-traits", default-features = false }
@@ -210,4 +209,3 @@ runtime-benchmarks = [
   "vesting/runtime-benchmarks",
   "bonded-finance/runtime-benchmarks",
 ]
-

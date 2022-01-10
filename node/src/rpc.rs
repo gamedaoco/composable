@@ -5,13 +5,11 @@
 
 #![warn(missing_docs)]
 
-use pallet_assets::rpc::{Assets, AssetsApi};
 use primitives::currency::CurrencyId;
 use std::sync::Arc;
 
 use common::{AccountId, AccountIndex, Balance};
 use pallet_assets::rpc::{Assets, AssetsApi};
-use primitives::currency::CurrencyId;
 pub use sc_rpc_api::DenyUnsafe;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
