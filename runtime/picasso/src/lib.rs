@@ -59,7 +59,7 @@ use frame_system as system;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{FixedPointNumber, Perbill, Permill, Perquintill};
-use support::traits::EqualPrivilegeOnly;
+use support::traits::{fungibles, EqualPrivilegeOnly};
 use system::{
 	limits::{BlockLength, BlockWeights},
 	EnsureRoot,
@@ -843,6 +843,12 @@ pub type Executive =
 	executive::Executive<Runtime, Block, system::ChainContext<Runtime>, Runtime, AllPallets>;
 
 impl_runtime_apis! {
+	impl assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
+		fn balance_of(asset_id: CurrencyId, account_id: AccountId) -> Balance {
+			<Assets as fungibles::Inspect::<AccountId>>::balance(asset_id, &account_id)
+		}
+	}
+
 	impl sp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION

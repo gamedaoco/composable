@@ -10,6 +10,8 @@ use primitives::currency::CurrencyId;
 use std::sync::Arc;
 
 use common::{AccountId, AccountIndex, Balance};
+use pallet_assets::rpc::{Assets, AssetsApi};
+use primitives::currency::CurrencyId;
 pub use sc_rpc_api::DenyUnsafe;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
@@ -25,6 +27,36 @@ pub struct FullDeps<C, P> {
 	pub pool: Arc<P>,
 	/// Whether to deny unsafe calls
 	pub deny_unsafe: DenyUnsafe,
+}
+
+#[cfg(feature = "develop")]
+pub trait CApi:
+	substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
+	+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
+	+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
+{
+}
+
+#[cfg(feature = "develop")]
+impl<T> CApi for T where
+	T: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
+		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
+		+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
+{
+}
+
+#[cfg(not(feature = "develop"))]
+pub trait CApi:
+	substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
+	+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
+{
+}
+
+#[cfg(not(feature = "develop"))]
+impl<T> CApi for T where
+	T: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, AccountIndex>
+		+ pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>
+{
 }
 
 /// Instantiate all full RPC extensions.
@@ -50,6 +82,7 @@ where
 
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client)));
 
+	#[cfg(feature = "develop")]
 	io.extend_with(AssetsApi::to_delegate(Assets::new(client)));
 
 	// Extend this RPC with a custom API by using the following syntax.

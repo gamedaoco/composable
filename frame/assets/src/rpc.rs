@@ -15,7 +15,7 @@ pub trait AssetsApi<BlockHash, AssetId, AccountId, Balance> {
 		at: Option<BlockHash>,
 		currency: AssetId,
 		account: AccountId,
-	) -> RpcResult<Option<Balance>>;
+	) -> RpcResult<Balance>;
 }
 
 /// A struct that implements the `AssetsApi`.
@@ -68,7 +68,7 @@ where
 		at: Option<<Block as BlockT>::Hash>,
 		asset_id: AssetId,
 		account_id: AccountId,
-	) -> RpcResult<Option<Balance>> {
+	) -> RpcResult<Balance> {
 		let api = self.client.runtime_api();
 		let at = BlockId::hash(at.unwrap_or_else(|| {
 			// If the block hash is not supplied assume the best block.

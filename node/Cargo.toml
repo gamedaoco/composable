@@ -21,6 +21,7 @@ picasso-runtime = { path = "../runtime/picasso" }
 composable-runtime = { path = "../runtime/composable", optional = true }
 dali-runtime = { path = "../runtime/dali", optional = true }
 common = { path = "../runtime/common"  }
+primitives = { path = "../runtime/primitives" }
 pallet-assets = { path = "../frame/assets" }
 
 # FRAME Dependencies
