@@ -453,6 +453,18 @@ impl collator_selection::Config for Runtime {
 	type WeightInfo = weights::collator_selection::WeightInfo<Runtime>;
 }
 
+impl assets::Config for Runtime {
+	type NativeAssetId = NativeAssetId;
+	type GenerateCurrencyId = Factory;
+	type AssetId = CurrencyId;
+	type Balance = Balance;
+	type NativeCurrency = Balances;
+	type MultiCurrency = Tokens;
+	type WeightInfo = ();
+	type AdminOrigin = EnsureRootOrHalfCouncil;
+	type GovernanceRegistry = GovernanceRegistry;
+}
+
 parameter_type_with_key! {
 	// TODO:
 	pub ExistentialDeposits: |_currency_id: CurrencyId| -> Balance {
@@ -578,6 +590,8 @@ impl utility::Config for Runtime {
 }
 
 parameter_types! {
+	pub const DynamicCurrencyIdInitial: CurrencyId = CurrencyId::LOCAL_LP_TOKEN_START;
+
 	pub const LaunchPeriod: BlockNumber = 5 * DAYS;
 	pub const VotingPeriod: BlockNumber = 5 * DAYS;
 	pub const FastTrackVotingPeriod: BlockNumber = 3 * HOURS;
@@ -590,6 +604,18 @@ parameter_types! {
 	pub const InstantAllowed: bool = true;
 	pub const MaxVotes: u32 = 100;
 	pub const MaxProposals: u32 = 100;
+}
+
+impl governance_registry::Config for Runtime {
+	type Event = Event;
+	type AssetId = CurrencyId;
+	type WeightInfo = ();
+}
+
+impl currency_factory::Config for Runtime {
+	type Event = Event;
+	type DynamicCurrencyId = CurrencyId;
+	type DynamicCurrencyIdInitial = DynamicCurrencyIdInitial;
 }
 
 impl democracy::Config for Runtime {
@@ -685,6 +711,8 @@ construct_runtime!(
 		Democracy: democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 33,
 		Scheduler: scheduler::{Pallet, Call, Storage, Event<T>} = 34,
 		Utility: utility::{Pallet, Call, Event} = 35,
+		GovernanceRegistry: governance_registry::{Pallet, Call, Storage, Event<T>} = 36,
+		Factory: currency_factory::{Pallet, Storage, Event<T>} = 37,
 
 		// XCM helpers.
 		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 40,
@@ -693,6 +721,8 @@ construct_runtime!(
 		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 43,
 
 		Tokens: orml_tokens::{Pallet, Call, Storage, Event<T>} = 52,
+
+		Assets: assets::{Pallet, Call, Storage} = 57,
 	}
 );
 
@@ -717,6 +747,12 @@ pub type Executive =
 	executive::Executive<Runtime, Block, system::ChainContext<Runtime>, Runtime, AllPallets>;
 
 impl_runtime_apis! {
+	impl assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
+		fn balance_of(asset_id: CurrencyId, account_id: AccountId) -> Balance {
+			<Assets as support::traits::fungibles::Inspect::<AccountId>>::balance(asset_id, &account_id)
+		}
+	}
+
 	impl sp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION
