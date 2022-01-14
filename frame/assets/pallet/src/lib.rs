@@ -66,8 +66,6 @@
 pub use pallet::*;
 
 mod orml;
-pub mod rpc;
-pub mod runtime_api;
 
 #[cfg(test)]
 mod mocks;

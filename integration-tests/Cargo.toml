@@ -65,7 +65,7 @@ composable-traits = { path = "../frame/composable-traits" , default-features = f
 call-filter = { package = "pallet-call-filter", path = "../frame/call-filter", default-features = false }
 assets-registry = { package = "pallet-assets-registry", path = "../frame/assets-registry", default-features = false, optional = true}
 governance-registry = { package = "pallet-governance-registry", path = "../frame/governance-registry", default-features = false, optional = true}
-assets = { package = "pallet-assets", path = "../frame/assets", default-features = false, optional = true}
+assets = { package = "pallet-assets", path = "../frame/assets/pallet", default-features = false, optional = true}
 
 # Used for the node template's RPCs
 system-rpc-runtime-api = { package = "frame-system-rpc-runtime-api", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13", default-features = false }

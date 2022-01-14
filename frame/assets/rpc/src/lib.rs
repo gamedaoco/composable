@@ -1,4 +1,4 @@
-use crate::runtime_api::AssetsRuntimeApi;
+use assets_runtime_api::AssetsRuntimeApi;
 use codec::Codec;
 use jsonrpc_core::{Error as RpcError, ErrorCode, Result as RpcResult};
 use jsonrpc_derive::rpc;

@@ -1,5 +1,5 @@
 [package]
-name = "pallet-assets"
+name = "assets-rpc"
 version = "0.0.1"
 authors = ["Composable Developers"]
 homepage = "https://composable.finance"
@@ -25,7 +25,7 @@ sp-core = { default-features = false, git = "https://github.com/paritytech/subst
 sp-std = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13" }
 
 # local
-composable-traits = { path = "../composable-traits", default-features = false }
+composable-traits = { path = "../../composable-traits", default-features = false }
 
 orml-traits = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "17a791edf431d7d7aee1ea3dfaeeb7bc21944301", default-features = false }
 num-traits = { version = "0.2.14", default-features = false }
@@ -33,25 +33,18 @@ scale-info = { version = "1.0", default-features = false, features = [
     "derive",
 ] }
 
+assets-runtime-api = {path="../runtime-api"}
+
 # rpc
 jsonrpc-core = "18.0.0"
 jsonrpc-core-client = "18.0.0"
 jsonrpc-derive = "18.0.0"
 
 # misc
-serde = { version = "1.0.133", features = ["derive"], optional = true }
+serde = { version = "1.0.133", default-features = false, features = ["derive"], optional = true }
 codec = { default-features = false, features = [
     "derive",
 ], package = "parity-scale-codec", version = "2.0.0" }
-
-
-[dev-dependencies]
-pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13" }
-orml-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "17a791edf431d7d7aee1ea3dfaeeb7bc21944301" }
-governance-registry = { package = "pallet-governance-registry", path = "../governance-registry", default-features = false }
-
-[package.metadata.cargo-udeps.ignore]
-development = ["governance-registry"]
 
 [features]
 default = ["std"]
@@ -60,6 +53,7 @@ std = [
     "codec/std",
     "frame-support/std",
     "sp-runtime/std",
+    "sp-api/std",
     "orml-traits/std",
     "num-traits/std",
 ]

@@ -210,7 +210,7 @@ parameter_types! {
 	pub NativeAssetId: CurrencyId = CurrencyId::PICA;
 }
 
-impl pallet_assets::Config for Runtime {
+impl assets::Config for Runtime {
 	type NativeAssetId = NativeAssetId;
 	type GenerateCurrencyId = Factory;
 	type AssetId = CurrencyId;
@@ -705,38 +705,6 @@ impl democracy::Config for Runtime {
 }
 
 parameter_types! {
-	  pub const DynamicCurrencyIdInitial: CurrencyId = CurrencyId::LOCAL_LP_TOKEN_START;
-}
-
-impl currency_factory::Config for Runtime {
-	type Event = Event;
-	type DynamicCurrencyId = CurrencyId;
-	type DynamicCurrencyIdInitial = DynamicCurrencyIdInitial;
-}
-
-impl governance_registry::Config for Runtime {
-	type Event = Event;
-	type AssetId = CurrencyId;
-	type WeightInfo = ();
-}
-
-parameter_types! {
-	pub NativeAssetId: CurrencyId = CurrencyId::PICA;
-}
-
-impl assets::Config for Runtime {
-	type NativeAssetId = NativeAssetId;
-	type GenerateCurrencyId = Factory;
-	type AssetId = CurrencyId;
-	type Balance = Balance;
-	type NativeCurrency = Balances;
-	type MultiCurrency = Tokens;
-	type WeightInfo = ();
-	type AdminOrigin = EnsureRootOrHalfCouncil;
-	type GovernanceRegistry = GovernanceRegistry;
-}
-
-parameter_types! {
   pub const InitialPayment: Perbill = Perbill::from_percent(25);
 	pub const VestingStep: BlockNumber = 7 * DAYS;
   pub const Prefix: &'static [u8] = b"picasso-";
@@ -835,8 +803,6 @@ construct_runtime!(
 		Democracy: democracy::{Pallet, Call, Storage, Config<T>, Event<T>} = 33,
 		Scheduler: scheduler::{Pallet, Call, Storage, Event<T>} = 34,
 		Utility: utility::{Pallet, Call, Event} = 35,
-		GovernanceRegistry: governance_registry::{Pallet, Call, Storage, Event<T>} = 36,
-		Factory: currency_factory::{Pallet, Storage, Event<T>} = 37,
 
 		// XCM helpers.
 		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 40,
@@ -877,7 +843,7 @@ pub type Executive =
 	executive::Executive<Runtime, Block, system::ChainContext<Runtime>, Runtime, AllPallets>;
 
 impl_runtime_apis! {
-	impl pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
+	impl assets_runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
 		fn balance_of(asset_id: CurrencyId, account_id: AccountId) -> Balance {
 			<Assets as fungibles::Inspect::<AccountId>>::balance(asset_id, &account_id)
 		}

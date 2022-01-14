@@ -221,6 +221,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
 
 [[package]]
+name = "assets-rpc"
+version = "0.0.1"
+dependencies = [
+ "assets-runtime-api",
+ "composable-traits",
+ "frame-support",
+ "frame-system",
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "num-traits",
+ "orml-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api",
+ "sp-arithmetic",
+ "sp-blockchain",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "assets-runtime-api"
+version = "0.0.1"
+dependencies = [
+ "parity-scale-codec",
+ "sp-api",
+]
+
+[[package]]
 name = "async-attributes"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1398,6 +1430,8 @@ dependencies = [
 name = "composable-node"
 version = "1.0.9"
 dependencies = [
+ "assets-rpc",
+ "assets-runtime-api",
  "common",
  "composable-runtime",
  "cumulus-client-cli",
@@ -1468,6 +1502,7 @@ dependencies = [
 name = "composable-runtime"
 version = "0.1.0"
 dependencies = [
+ "assets-runtime-api",
  "common",
  "composable-traits",
  "cumulus-pallet-aura-ext",
@@ -2349,6 +2384,7 @@ checksum = "ef8ae57c4978a2acd8b869ce6b9ca1dfe817bff704c220209fdef2c0b75a01b9"
 name = "dali-runtime"
 version = "0.1.0"
 dependencies = [
+ "assets-runtime-api",
  "common",
  "composable-traits",
  "cumulus-pallet-aura-ext",
@@ -6327,20 +6363,11 @@ dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "jsonrpc-core",
- "jsonrpc-core-client",
- "jsonrpc-derive",
  "num-traits",
- "orml-tokens",
  "orml-traits",
- "pallet-balances",
- "pallet-governance-registry",
  "parity-scale-codec",
  "scale-info",
- "serde",
  "sp-api",
- "sp-arithmetic",
- "sp-blockchain",
  "sp-core",
  "sp-io",
  "sp-runtime",
@@ -7991,6 +8018,7 @@ dependencies = [
 name = "picasso-runtime"
 version = "0.1.0"
 dependencies = [
+ "assets-runtime-api",
  "common",
  "composable-traits",
  "cumulus-pallet-aura-ext",

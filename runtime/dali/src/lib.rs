@@ -941,7 +941,7 @@ pub type Executive =
 	executive::Executive<Runtime, Block, system::ChainContext<Runtime>, Runtime, AllPallets>;
 
 impl_runtime_apis! {
-	impl assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
+	impl assets_runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
 		fn balance_of(asset_id: CurrencyId, account_id: AccountId) -> Balance {
 			<Assets as fungibles::Inspect::<AccountId>>::balance(asset_id, &account_id)
 		}

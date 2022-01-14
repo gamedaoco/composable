@@ -9,7 +9,7 @@ pub trait HostRuntimeApis:
 	+ sp_block_builder::BlockBuilder<Block>
 	+ substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>
 	+ pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance>
-	+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
+	+ assets_runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
 	+ sp_api::Metadata<Block>
 	+ sp_consensus_aura::AuraApi<Block, sp_consensus_aura::sr25519::AuthorityId>
 	+ sp_offchain::OffchainWorkerApi<Block>
@@ -28,7 +28,7 @@ where
 		+ sp_block_builder::BlockBuilder<Block>
 		+ substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>
 		+ pallet_transaction_payment_rpc_runtime_api::TransactionPaymentApi<Block, Balance>
-		+ pallet_assets::runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
+		+ assets_runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance>
 		+ sp_api::Metadata<Block>
 		+ sp_consensus_aura::AuraApi<Block, sp_consensus_aura::sr25519::AuthorityId>
 		+ sp_offchain::OffchainWorkerApi<Block>

@@ -8,8 +8,8 @@
 use primitives::currency::CurrencyId;
 use std::sync::Arc;
 
+use assets_rpc::{Assets, AssetsApi};
 use common::{AccountId, AccountIndex, Balance};
-use pallet_assets::rpc::{Assets, AssetsApi};
 pub use sc_rpc_api::DenyUnsafe;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
@@ -36,7 +36,7 @@ where
 	C: Send + Sync + 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<B, AccountId, AccountIndex>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<B, Balance>,
-	C::Api: pallet_assets::runtime_api::AssetsRuntimeApi<B, CurrencyId, AccountId, Balance>,
+	C::Api: assets_runtime_api::AssetsRuntimeApi<B, CurrencyId, AccountId, Balance>,
 	C::Api: BlockBuilder<B>,
 	P: TransactionPool + 'static,
 {
