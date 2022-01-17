@@ -26,8 +26,9 @@ members = [
     "runtime/primitives",
     "utils/faucet-server",
     "utils/parachain-utils",
-    "frame/*",
-    "frame/assets/*",
+    "frame/assets",
+    "frame/assets/rpc",
+    "frame/assets/runtime-api",
     "integration-tests",
     "integration-tests/simnode",
     "node",
@@ -38,7 +39,6 @@ members = [
     "utils/collator-sidecar",
     "utils/price-feed",
 ]
-exclude = ["frame/assets"]
 
 [profile.release]
 # Polkadot runtime requires unwinding.
