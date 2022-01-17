@@ -33,23 +33,6 @@ impl<C, M> Assets<C, M> {
 	}
 }
 
-/// Error type of this RPC api.
-// pub enum Error {
-// 	/// The transaction was not decodable.
-// 	DecodeError,
-// 	/// The call to runtime failed.
-// 	RuntimeError,
-// }
-//
-// impl From<Error> for i64 {
-// 	fn from(e: Error) -> i64 {
-// 		match e {
-// 			Error::RuntimeError => 1,
-// 			Error::DecodeError => 2,
-// 		}
-// 	}
-// }
-
 impl<C, Block, AssetId, AccountId, Balance>
 	AssetsApi<<Block as BlockT>::Hash, AssetId, AccountId, Balance>
 	for Assets<C, (Block, AssetId, AccountId, Balance)>
@@ -85,18 +68,4 @@ where
 			}
 		})
 	}
-
-	// fn get_sum(&self, at: Option<<Block as BlockT>::Hash>) -> Result<u32> {
-	// 	let api = self.client.runtime_api();
-	// 	let at = BlockId::hash(at.unwrap_or_else(||
-	// 		// If the block hash is not supplied assume the best block.
-	// 		self.client.info().best_hash));
-
-	// 	let runtime_api_result = api.get_sum(&at);
-	// 	runtime_api_result.map_err(|e| RpcError {
-	// 		code: ErrorCode::ServerError(9876), // No real reason for this value
-	// 		message: "Something wrong".into(),
-	// 		data: Some(format!("{:?}", e).into()),
-	// 	})
-	// }
 }
