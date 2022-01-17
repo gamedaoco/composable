@@ -66,7 +66,7 @@ smallvec = "1.6.1"
 
 # local modules
 assets-registry = { package = "pallet-assets-registry", path = '../../frame/assets-registry', default-features = false }
-assets = { package = "pallet-assets", path = '../../frame/assets/pallet', default-features = false }
+assets = { package = "pallet-assets", path = '../../frame/assets', default-features = false }
 crowdloan-rewards = { package = "pallet-crowdloan-rewards", path = '../../frame/crowdloan-rewards', default-features = false }
 bonded-finance = { package = "pallet-bonded-finance", path = "../../frame/bonded-finance", default-features = false }
 vesting = { package = "pallet-vesting", path = "../../frame/vesting", default-features = false }

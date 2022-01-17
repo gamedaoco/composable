@@ -36,7 +36,7 @@ proptest = "1.0"
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13" }
 pallet-currency-factory = { path = "../currency-factory" }
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.13" }
-pallet-assets = { path = '../assets/pallet', default-features = false}
+pallet-assets = { path = '../assets', default-features = false}
 orml-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "17a791edf431d7d7aee1ea3dfaeeb7bc21944301" }
 hex-literal = {version = "0.3.3", default-features = false }
 composable-tests-helpers = {  path = "../composable-tests-helpers" }

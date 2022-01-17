@@ -64,7 +64,7 @@ smallvec = "1.6.1"
 
 # local modules
 assets-registry = { package = "pallet-assets-registry", path = '../../frame/assets-registry', default-features = false, optional = true }
-assets = { package = "pallet-assets", path = '../../frame/assets/pallet', default-features = false }
+assets = { package = "pallet-assets", path = '../../frame/assets', default-features = false }
 
 common = { path = "../common", default-features = false }
 primitives = { path = "../primitives", default-features = false }
