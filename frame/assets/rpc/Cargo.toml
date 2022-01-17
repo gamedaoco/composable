@@ -33,7 +33,7 @@ scale-info = { version = "1.0", default-features = false, features = [
     "derive",
 ] }
 
-assets-runtime-api = {path="../runtime-api"}
+assets-runtime-api = { path = "../runtime-api" }
 
 # rpc
 jsonrpc-core = "18.0.0"
@@ -41,7 +41,9 @@ jsonrpc-core-client = "18.0.0"
 jsonrpc-derive = "18.0.0"
 
 # misc
-serde = { version = "1.0.133", default-features = false, features = ["derive"], optional = true }
+serde = { version = "1.0.133", default-features = false, features = [
+    "derive",
+], optional = true }
 codec = { default-features = false, features = [
     "derive",
 ], package = "parity-scale-codec", version = "2.0.0" }
