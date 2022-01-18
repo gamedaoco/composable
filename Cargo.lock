@@ -1507,6 +1507,7 @@ dependencies = [
  "assets-runtime-api",
  "common",
  "composable-traits",
+ "crowdloan-rewards-runtime-api",
  "cumulus-pallet-aura-ext",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
@@ -1537,7 +1538,7 @@ dependencies = [
  "pallet-collator-selection",
  "pallet-collective",
  "pallet-currency-factory",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-governance-registry",
  "pallet-indices",
  "pallet-membership",
@@ -1888,6 +1889,40 @@ checksum = "cfcae03edb34f947e64acdb1c33ec169824e20657e9ecb61cef6c8c74dcb8120"
 dependencies = [
  "cfg-if 1.0.0",
  "lazy_static",
+]
+
+[[package]]
+name = "crowdloan-rewards-rpc"
+version = "0.0.1"
+dependencies = [
+ "composable-traits",
+ "crowdloan-rewards-runtime-api",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "num-traits",
+ "orml-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-api",
+ "sp-arithmetic",
+ "sp-blockchain",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "crowdloan-rewards-runtime-api"
+version = "0.0.1"
+dependencies = [
+ "parity-scale-codec",
+ "sp-api",
 ]
 
 [[package]]
@@ -2375,6 +2410,7 @@ dependencies = [
  "assets-runtime-api",
  "common",
  "composable-traits",
+ "crowdloan-rewards-runtime-api",
  "cumulus-pallet-aura-ext",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
@@ -2407,7 +2443,7 @@ dependencies = [
  "pallet-collective",
  "pallet-crowdloan-rewards",
  "pallet-currency-factory",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-dutch-auction",
  "pallet-governance-registry",
  "pallet-identity",
@@ -4224,7 +4260,7 @@ dependencies = [
  "pallet-collator-selection",
  "pallet-collective",
  "pallet-currency-factory",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-governance-registry",
  "pallet-indices",
  "pallet-membership",
@@ -4722,7 +4758,7 @@ dependencies = [
  "pallet-balances",
  "pallet-bounties",
  "pallet-collective",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-election-provider-multi-phase",
  "pallet-elections-phragmen",
  "pallet-gilt",
@@ -6731,6 +6767,56 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-curve-amm"
+version = "0.0.1"
+dependencies = [
+ "composable-traits",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log 0.4.14",
+ "num-traits",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-balances",
+ "pallet-currency-factory",
+ "pallet-oracle",
+ "pallet-vault",
+ "parity-scale-codec",
+ "plotters",
+ "proptest 0.9.6",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-democracy"
+version = "0.0.1"
+dependencies = [
+ "composable-traits",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-balances",
+ "pallet-governance-registry",
+ "pallet-scheduler",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-democracy"
 version = "4.0.0-dev"
 source = "git+https://github.com/composableFi/substrate?branch=polkadot-v0.9.13#1681b1e8a82d7189b1fe32fe054a421a0cb96c0c"
@@ -6927,6 +7013,58 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-lending"
+version = "0.0.1"
+dependencies = [
+ "composable-tests-helpers",
+ "composable-traits",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex-literal",
+ "log 0.4.14",
+ "num-traits",
+ "once_cell",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-assets",
+ "pallet-balances",
+ "pallet-currency-factory",
+ "pallet-dutch-auction",
+ "pallet-liquidations",
+ "pallet-oracle",
+ "pallet-timestamp",
+ "pallet-vault",
+ "parity-scale-codec",
+ "plotters",
+ "proptest 0.9.6",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-liquidations"
+version = "0.0.1"
+dependencies = [
+ "composable-traits",
+ "frame-support",
+ "frame-system",
+ "num-traits",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-membership"
 version = "4.0.0-dev"
 source = "git+https://github.com/composableFi/substrate?branch=polkadot-v0.9.13#1681b1e8a82d7189b1fe32fe054a421a0cb96c0c"
@@ -7082,6 +7220,39 @@ dependencies = [
  "sp-core",
  "sp-io",
  "sp-keystore",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-ping"
+version = "0.1.0"
+dependencies = [
+ "cumulus-pallet-xcm",
+ "cumulus-primitives-core",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+]
+
+[[package]]
+name = "pallet-privilege"
+version = "0.0.1"
+dependencies = [
+ "bitflags",
+ "composable-traits",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -7291,6 +7462,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-transaction-fee"
+version = "0.1.0"
+dependencies = [
+ "composable-traits",
+ "frame-support",
+ "frame-system",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "parity-scale-codec",
+ "primitives",
+ "scale-info",
+ "smallvec 1.7.0",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-transaction-payment"
 version = "4.0.0-dev"
 source = "git+https://github.com/composableFi/substrate?branch=polkadot-v0.9.13#1681b1e8a82d7189b1fe32fe054a421a0cb96c0c"
@@ -7348,6 +7539,33 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-uniswap-v2"
+version = "0.0.1"
+dependencies = [
+ "composable-traits",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log 0.4.14",
+ "num-traits",
+ "orml-tokens",
+ "orml-traits",
+ "pallet-balances",
+ "pallet-currency-factory",
+ "pallet-oracle",
+ "pallet-vault",
+ "parity-scale-codec",
+ "plotters",
+ "scale-info",
+ "serde",
+ "sp-arithmetic",
+ "sp-core",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -7831,6 +8049,7 @@ dependencies = [
  "assets-runtime-api",
  "common",
  "composable-traits",
+ "crowdloan-rewards-runtime-api",
  "cumulus-pallet-aura-ext",
  "cumulus-pallet-dmp-queue",
  "cumulus-pallet-parachain-system",
@@ -7862,7 +8081,7 @@ dependencies = [
  "pallet-collective",
  "pallet-crowdloan-rewards",
  "pallet-currency-factory",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-governance-registry",
  "pallet-identity",
  "pallet-indices",
@@ -8794,7 +9013,7 @@ dependencies = [
  "pallet-balances",
  "pallet-bounties",
  "pallet-collective",
- "pallet-democracy",
+ "pallet-democracy 4.0.0-dev",
  "pallet-election-provider-multi-phase",
  "pallet-elections-phragmen",
  "pallet-grandpa",

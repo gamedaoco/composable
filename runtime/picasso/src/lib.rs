@@ -849,6 +849,14 @@ impl_runtime_apis! {
 		}
 	}
 
+	impl crowdloan_rewards_runtime_api::CrowdloanRewardsRuntimeApi<Block, AccountId, Balance> for Runtime {
+		fn is_claim_available_for(account: AccountId) -> bool {
+			CrowdloanRewards::
+		}
+
+		fn claim_amount_for(account: AccountId) -> Option<Balance>;
+	}
+
 	impl sp_api::Core<Block> for Runtime {
 		fn version() -> RuntimeVersion {
 			VERSION
