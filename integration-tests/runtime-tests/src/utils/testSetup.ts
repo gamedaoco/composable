@@ -16,12 +16,36 @@ exports.mochaHooks = {
   beforeAll: [async() => {
     // extract all types from definitions - fast and dirty approach, flatted on 'types'
     const types = Object.values(definitions).reduce((res, { types }): object => ({ ...res, ...types }), {});
+    const rpc = Object.values(definitions).reduce((res, { rpc }): object => ({ ...res, ...rpc, }), {});
+
 
     global.endpoint = `ws://${args.h}:${args.p}`;
     const provider = new WsProvider(global.endpoint);
     console.debug(`Establishing connection to ${global.endpoint}...`);
-    // async or Promise-returning functions allowed
-    global.api = await ApiPromise.create({ provider, types });
+    const apiOptions = {
+      provider, types,
+      rpc: {
+        crowdloanRewards: {
+          amountAvailableToClaimFor: {
+            description: "The unclaimed amount",
+            params: [
+              {
+                name: "at",
+                type: "Option<Hash>",
+              },
+              {
+                name: "account",
+                type: "PalletCrowdloanRewardsModelsRemoteAccount"
+              },
+            ],
+            type: "Balance"
+          },
+        },
+      },
+    };
+    console.log(apiOptions);
+    global.api = await ApiPromise.create(apiOptions);
+
     global.web3 = new Web3();
 
     // do something before every test,

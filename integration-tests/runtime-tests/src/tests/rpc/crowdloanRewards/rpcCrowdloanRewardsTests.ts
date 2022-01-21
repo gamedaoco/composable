@@ -8,9 +8,9 @@ export class RpcCrowdloanRewardsTests {
    * 
    */
   public static runRpcCrowdloanRewardsTests() {
-    describe('query.crowdloanRewards.account Tests', function () {
+    describe('query.crowdloanRewards.account Tests', function() {
       it('STUB', async () => {
-        RpcCrowdloanRewardsTests.rpcCrowdloanRewardsTest();
+        await RpcCrowdloanRewardsTests.rpcCrowdloanRewardsTest();
       });
     });
   }
@@ -20,7 +20,13 @@ export class RpcCrowdloanRewardsTests {
    */
   private static async rpcCrowdloanRewardsTest() {
     // ToDo (D. Roth): STUB
-    expect(true).to.equal(true);
+    const x = await api.rpc.crowdloanRewards.amountAvailableToClaimFor(null,
+      api.createType(
+        'PalletCrowdloanRewardsModelsRemoteAccount',
+        {
+          RelayChain: keyring.decodeAddress("5zCSgFGFyfADTNriuoZvRNVByYK4S2ebiioFPCzoCmsbB3WY")
+        }));
+    expect(x).to.equal(1);
   }
 }
 
