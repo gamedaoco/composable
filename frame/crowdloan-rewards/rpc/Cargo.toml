@@ -34,6 +34,7 @@ scale-info = { version = "1.0", default-features = false, features = [
 ] }
 
 crowdloan-rewards-runtime-api = { path = "../runtime-api" }
+pallet-crowdloan-rewards = { path = "../../crowdloan-rewards", default-features = false }
 
 # rpc
 jsonrpc-core = "18.0.0"

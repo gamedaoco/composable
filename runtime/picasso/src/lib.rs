@@ -716,7 +716,7 @@ impl crowdloan_rewards::Config for Runtime {
 	type Currency = Assets;
 	type AdminOrigin = EnsureRootOrHalfCouncil;
 	type Convert = sp_runtime::traits::ConvertInto;
-	type RelayChainAccountId = [u8; 32];
+	type RelayChainAccountId = sp_runtime::AccountId32;
 	type InitialPayment = InitialPayment;
 	type VestingStep = VestingStep;
 	type Prefix = Prefix;
@@ -849,12 +849,14 @@ impl_runtime_apis! {
 		}
 	}
 
-	impl crowdloan_rewards_runtime_api::CrowdloanRewardsRuntimeApi<Block, AccountId, Balance> for Runtime {
-		fn is_claim_available_for(account: AccountId) -> bool {
-			CrowdloanRewards::
+	impl crowdloan_rewards_runtime_api::CrowdloanRewardsRuntimeApi<Block, <Runtime as crowdloan_rewards::Config>::RelayChainAccountId, Balance> for Runtime {
+		fn amount_available_to_claim_for(remote_account: crowdloan_rewards::RemoteAccountOf<Runtime>) -> Balance {
+			crowdloan_rewards::Rewards::<Runtime>::get(remote_account)
+				.as_ref()
+				.map(crowdloan_rewards::should_have_claimed::<Runtime>)
+				.unwrap_or_else(|| Ok(Balance::zero()))
+				.unwrap_or_else(|_| Balance::zero())
 		}
-
-		fn claim_amount_for(account: AccountId) -> Option<Balance>;
 	}
 
 	impl sp_api::Core<Block> for Runtime {

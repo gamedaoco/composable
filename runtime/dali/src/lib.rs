@@ -779,7 +779,7 @@ impl crowdloan_rewards::Config for Runtime {
 	type Currency = Assets;
 	type AdminOrigin = EnsureRootOrHalfCouncil;
 	type Convert = sp_runtime::traits::ConvertInto;
-	type RelayChainAccountId = [u8; 32];
+	type RelayChainAccountId = sp_runtime::AccountId32;
 	type InitialPayment = InitialPayment;
 	type VestingStep = VestingStep;
 	type Prefix = Prefix;
@@ -944,6 +944,16 @@ impl_runtime_apis! {
 	impl assets_runtime_api::AssetsRuntimeApi<Block, CurrencyId, AccountId, Balance> for Runtime {
 		fn balance_of(asset_id: CurrencyId, account_id: AccountId) -> Balance {
 			<Assets as fungibles::Inspect::<AccountId>>::balance(asset_id, &account_id)
+		}
+	}
+
+	impl crowdloan_rewards_runtime_api::CrowdloanRewardsRuntimeApi<Block, <Runtime as crowdloan_rewards::Config>::RelayChainAccountId, Balance> for Runtime {
+		fn amount_available_to_claim_for(remote_account: crowdloan_rewards::RemoteAccountOf<Runtime>) -> Balance {
+			crowdloan_rewards::Rewards::<Runtime>::get(remote_account)
+				.as_ref()
+				.map(crowdloan_rewards::should_have_claimed::<Runtime>)
+				.unwrap_or_else(|| Ok(Balance::zero()))
+				.unwrap_or_else(|_| Balance::zero())
 		}
 	}
 

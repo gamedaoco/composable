@@ -61,6 +61,7 @@ utility = { package = "pallet-utility", git = "https://github.com/paritytech/sub
 orml-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "17a791edf431d7d7aee1ea3dfaeeb7bc21944301", default-features = false }
 orml-traits = { git = "https://github.com/open-web3-stack/open-runtime-module-library", rev = "17a791edf431d7d7aee1ea3dfaeeb7bc21944301", default-features = false }
 smallvec = "1.6.1"
+crowdloan-rewards = { package = "pallet-crowdloan-rewards", path = '../../frame/crowdloan-rewards', default-features = false }
 
 # local modules
 assets-registry = { package = "pallet-assets-registry", path = '../../frame/assets-registry', default-features = false, optional = true }

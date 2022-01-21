@@ -1436,6 +1436,8 @@ dependencies = [
  "assets-runtime-api",
  "common",
  "composable-runtime",
+ "crowdloan-rewards-rpc",
+ "crowdloan-rewards-runtime-api",
  "cumulus-client-cli",
  "cumulus-client-collator",
  "cumulus-client-consensus-aura",
@@ -1451,6 +1453,7 @@ dependencies = [
  "jsonrpc-core",
  "log 0.4.14",
  "pallet-assets",
+ "pallet-crowdloan-rewards",
  "pallet-transaction-payment-rpc",
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",
@@ -1537,6 +1540,7 @@ dependencies = [
  "pallet-call-filter",
  "pallet-collator-selection",
  "pallet-collective",
+ "pallet-crowdloan-rewards",
  "pallet-currency-factory",
  "pallet-democracy 4.0.0-dev",
  "pallet-governance-registry",
@@ -1575,6 +1579,20 @@ dependencies = [
  "xcm",
  "xcm-builder",
  "xcm-executor",
+]
+
+[[package]]
+name = "composable-support"
+version = "0.0.1"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "proptest 1.0.0",
+ "scale-info",
+ "sp-arithmetic",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]
@@ -1905,6 +1923,7 @@ dependencies = [
  "jsonrpc-derive",
  "num-traits",
  "orml-traits",
+ "pallet-crowdloan-rewards",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -1921,6 +1940,7 @@ dependencies = [
 name = "crowdloan-rewards-runtime-api"
 version = "0.0.1"
 dependencies = [
+ "pallet-crowdloan-rewards",
  "parity-scale-codec",
  "sp-api",
 ]
@@ -7474,7 +7494,7 @@ dependencies = [
  "parity-scale-codec",
  "primitives",
  "scale-info",
- "smallvec 1.7.0",
+ "smallvec 1.8.0",
  "sp-core",
  "sp-io",
  "sp-runtime",
