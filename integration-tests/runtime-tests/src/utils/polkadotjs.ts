@@ -60,7 +60,7 @@ export function sendUnsignedAndWaitFor<T extends AnyTuple>(
         }
       })
       .catch(function (e) {
-        reject(Error(e.message));
+        reject(Error(e.stack));
       });
   });
 }
@@ -127,7 +127,7 @@ export function sendAndWaitFor<T extends AnyTuple>(
         }
       })
       .catch(function (e) {
-        reject(Error(e.message));
+        reject(Error(e.stack));
       });
   });
 }
