@@ -43,6 +43,8 @@ mod mock;
 #[cfg(test)]
 mod tests;
 
+mod lbp;
+
 #[frame_support::pallet]
 pub mod pallet {
 	use codec::{Codec, FullCodec};
@@ -51,6 +53,7 @@ pub mod pallet {
 		defi::{CurrencyPair, LiftedFixedBalance},
 		dex::{ConstantProductPoolInfo, CurveAmm},
 	};
+	use fixed::traits::{FromFixed, ToFixed};
 	use frame_support::{
 		pallet_prelude::*,
 		traits::fungibles::{Inspect, Mutate, Transfer},
@@ -66,6 +69,9 @@ pub mod pallet {
 	};
 	use sp_std::{collections::btree_set::BTreeSet, fmt::Debug, iter::FromIterator};
 
+	pub type BalanceOf<T: Config> = T::Balance;
+	pub type LbpWeightOf<T: Config> = T::Balance;
+
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
@@ -78,6 +84,7 @@ pub mod pallet {
 			+ Default
 			+ TypeInfo
 			+ Ord;
+
 		type Balance: Default
 			+ Parameter
 			+ Codec
@@ -92,6 +99,8 @@ pub mod pallet {
 			+ One
 			+ IntegerSquareRoot
 			+ FixedPointOperand
+			+ ToFixed
+			+ FromFixed
 			+ Into<LiftedFixedBalance>
 			+ Into<u128>; // cannot do From<u128>, until LiftedFixedBalance integer part is larger than 128
 			  // bit
@@ -188,6 +197,7 @@ pub mod pallet {
 	#[pallet::hooks]
 	impl<T: Config> Hooks<T::BlockNumber> for Pallet<T> {}
 
+	#[derive(PartialEq, Eq)]
 	#[pallet::error]
 	pub enum Error<T> {
 		/// Could not create new asset
@@ -212,6 +222,8 @@ pub mod pallet {
 		IndexOutOfRange,
 		/// The `AssetChecker` can use this error in case it can't provide better error
 		ExternalAssetCheckFailed,
+
+		Overflow,
 	}
 
 	#[pallet::event]

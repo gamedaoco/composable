@@ -1,5 +1,6 @@
 use core::{marker::PhantomData, ops::Deref};
 use scale_info::TypeInfo;
+use sp_runtime::traits::Zero;
 
 /// Black box that embbed the validated value.
 #[derive(Default, Copy, Clone, PartialEq, Eq, Debug, TypeInfo)]
@@ -32,6 +33,23 @@ impl<T, U> AsRef<T> for Validated<T, U> {
 
 pub trait Validate<U>: Sized {
 	fn validate(self) -> Result<Self, &'static str>;
+	fn validated(self) -> Result<Validated<Self, U>, &'static str> {
+		let value = self.validate()?;
+		Ok(Validated { value, _marker: Default::default() })
+	}
+}
+
+pub type NonZero<T> = Validated<T, IsNonZero>;
+pub struct IsNonZero;
+
+impl<T: Zero> Validate<IsNonZero> for T {
+	fn validate(self) -> Result<T, &'static str> {
+		if Zero::is_zero(&self) {
+			Err("Is Zero")
+		} else {
+			Ok(self)
+		}
+	}
 }
 
 #[derive(Debug, Eq, PartialEq)]

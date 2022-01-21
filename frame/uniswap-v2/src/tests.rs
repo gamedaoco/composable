@@ -1,9 +1,70 @@
+use composable_support::validation::Validate;
 use frame_support::assert_ok;
 
-use crate::mock::*;
+use crate::{mock::*, Error};
 use composable_traits::dex::CurveAmm as ConstantProductAmmTrait;
 use frame_support::traits::fungibles::{Inspect, Mutate};
 use sp_runtime::Permill;
+
+#[test]
+fn spot_price_should_work() {
+	let cases = vec![
+		(1000, 2000, 500, 500, 100, Ok(200), "Easy case"),
+		(1, 0, 1, 1, 1, Ok(0), "Zero buy_reserve"),
+		(1, 1, 0, 1, 1, Ok(0), "Zero amount"),
+		(Balance::MAX, Balance::MAX - 1, 1, 1, 1, Ok(0), "Truncated result"),
+		(
+			1,
+			Balance::MAX,
+			Balance::MAX, // lbp
+			Balance::MAX, // lbp
+			Balance::MAX,
+			Err(Error::<Test>::Overflow),
+			"Overflow weights",
+		),
+	];
+
+	for case in cases {
+		assert_eq!(
+			crate::lbp::spot_price(case.0.validated().unwrap(), case.1, case.2, case.3, case.4),
+			case.5,
+			"{}",
+			case.6
+		);
+	}
+}
+
+#[test]
+fn out_given_in_should_work() {
+	let cases: Vec<(_, _, _, _, _, Result<Balance, Error<Test>>, _)> = vec![
+		(1000, 2000, 500, 500, 100, Ok(178), "Easy case"),
+		(
+			Balance::MAX,
+			Balance::MAX,
+			Balance::MAX, // lbp
+			Balance::MAX, // lbp
+			Balance::MAX,
+			Ok(170141183460469231731687303715884105726),
+			"max",
+		),
+		(1, 1, 1, 1, 0, Ok(0), "Zero out reserve and amount"),
+	];
+
+	for case in cases {
+		assert_eq!(
+			crate::lbp::calculate_out_given_in(
+				case.0.validated().unwrap(),
+				case.1.validated().unwrap(),
+				case.2.validated().unwrap(),
+				case.3.validated().unwrap(),
+				case.4.validated().unwrap()
+			),
+			case.5,
+			"{}",
+			case.6
+		);
+	}
+}
 
 #[test]
 fn add_remove_liquidity() {
